@@ -1,0 +1,39 @@
+name: bot-api-mock
+version: 0.1.0.0
+license: MIT
+author: "The Lambdas"
+maintainer: "contact@snejugal.ru"
+copyright: "2022 The Lambdas"
+git: https://gitlab.com/SnejUgal/bot-api-mock
+
+extra-source-files: []
+
+description: Please see the README on GitLab at <https://gitlab.com/snejugal/bot-api-mock#readme>
+
+dependencies:
+  - base >= 4.7 && < 5
+
+library:
+  source-dirs: src
+
+executables:
+  bot-api-mock-exe:
+    main: Main.hs
+    source-dirs: app
+    ghc-options:
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
+    dependencies:
+      - bot-api-mock
+
+tests:
+  bot-api-mock-test:
+    main: Spec.hs
+    source-dirs: test
+    ghc-options:
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
+    dependencies:
+      - bot-api-mock
