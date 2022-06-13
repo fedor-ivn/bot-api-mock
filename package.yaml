@@ -11,7 +11,11 @@ extra-source-files: []
 description: Please see the README on GitLab at <https://gitlab.com/snejugal/bot-api-mock#readme>
 
 dependencies:
+  - aeson
   - base >= 4.7 && < 5
+  - servant-server
+  - text
+  - warp
 
 library:
   source-dirs: src

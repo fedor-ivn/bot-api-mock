@@ -1,4 +1,7 @@
-module Lib (run) where
+module Lib (startServer) where
 
-run :: IO ()
-run = putStrLn "hello world!"
+import Network.Wai.Handler.Warp (run)
+import Server (app)
+
+startServer :: IO ()
+startServer = run 8081 app
