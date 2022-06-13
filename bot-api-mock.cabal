@@ -25,6 +25,7 @@ library
       Server.Context
       Server.Response
       Server.Token
+      State
   other-modules:
       Paths_bot_api_mock
   hs-source-dirs:

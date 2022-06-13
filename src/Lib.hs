@@ -4,4 +4,4 @@ import Network.Wai.Handler.Warp (run)
 import Server (app)
 
 startServer :: IO ()
-startServer = run 8081 app
+startServer = app >>= run 8081
