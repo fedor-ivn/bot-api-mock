@@ -15,7 +15,9 @@ import Server.Response
     ResponseParameters (ResponseParameters, migrateToChatId, retryAfter),
   )
 import Server.Token (Token)
-import State (State (Dummy))
+import State (State (State))
+import Data.Map (Map)
+import qualified Data.Map as Map
 
 type Method a = Post '[JSON] (Response a)
 
@@ -31,5 +33,5 @@ server state token = return (ping context)
 
 app :: IO Application
 app = do
-  state <- newTVarIO Dummy
+  state <- newTVarIO (State [] [] (Map.empty))
   return (serve (Proxy :: Proxy Api) (server state))

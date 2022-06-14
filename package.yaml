@@ -16,6 +16,7 @@ dependencies:
   - servant-server
   - text
   - warp
+  - containers
 
 library:
   source-dirs: src
@@ -30,6 +31,7 @@ executables:
       - -with-rtsopts=-N
     dependencies:
       - bot-api-mock
+      - containers
 
 tests:
   bot-api-mock-test:

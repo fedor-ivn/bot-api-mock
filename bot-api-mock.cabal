@@ -26,6 +26,11 @@ library
       Server.Response
       Server.Token
       State
+      State.Chat
+      State.Id
+      State.Message
+      State.Update
+      State.User
   other-modules:
       Paths_bot_api_mock
   hs-source-dirs:
@@ -33,6 +38,7 @@ library
   build-depends:
       aeson
     , base >=4.7 && <5
+    , containers
     , servant-server
     , text
     , warp
@@ -49,6 +55,7 @@ executable bot-api-mock-exe
       aeson
     , base >=4.7 && <5
     , bot-api-mock
+    , containers
     , servant-server
     , text
     , warp
@@ -66,6 +73,7 @@ test-suite bot-api-mock-test
       aeson
     , base >=4.7 && <5
     , bot-api-mock
+    , containers
     , servant-server
     , text
     , warp
