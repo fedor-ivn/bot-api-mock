@@ -10,18 +10,17 @@ import qualified Data.Map as Map
 import State.Message(Message)
 import Server.Token (Token)
 
--- TODO: Implement real state
 data State = State 
     {
         users :: [User],
-        chats :: [Chat],
-        forBots :: Map Int BotHandler
+        chats :: [PrivateChat],
+        bots :: Map Id BotHandler
     }
 
 data BotHandler = BotHandler
     {
         token :: Token,
-        updatesTohadle :: Queue Update
+        updates :: Queue Update
     }
 
 -- User

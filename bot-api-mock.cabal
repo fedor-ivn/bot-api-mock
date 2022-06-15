@@ -39,6 +39,7 @@ library
       aeson
     , base >=4.7 && <5
     , containers
+    , dates
     , servant-server
     , text
     , warp
@@ -56,6 +57,7 @@ executable bot-api-mock-exe
     , base >=4.7 && <5
     , bot-api-mock
     , containers
+    , dates
     , servant-server
     , text
     , warp
@@ -74,6 +76,7 @@ test-suite bot-api-mock-test
     , base >=4.7 && <5
     , bot-api-mock
     , containers
+    , dates
     , servant-server
     , text
     , warp
