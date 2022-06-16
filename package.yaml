@@ -32,8 +32,6 @@ executables:
       - -with-rtsopts=-N
     dependencies:
       - bot-api-mock
-      - containers
-      - dates
 
 tests:
   bot-api-mock-test:
