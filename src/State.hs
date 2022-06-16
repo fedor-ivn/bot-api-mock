@@ -1,32 +1,31 @@
 module State (State (State)) where
-import State.User
-import State.Chat
-import Data.Sequence
-import Data.Sequence.Internal.Sorting (Queue)
-import State.Update (Update)
-import State.Id
+
 import Data.Map (Map)
 import qualified Data.Map as Map
-import State.Message(Message)
 import Server.Token (Token)
+import State.Chat
+import State.Id
+import State.Message (Message)
+import State.Update (Update)
+import State.User
+import Data.Sequence (Seq)
 
-data State = State 
-    {
-        users :: [User],
-        chats :: [PrivateChat],
-        bots :: Map Id BotHandler
-    }
+data State = State
+  { users :: [User],
+    -- The IDs are sorted in ascending order, as otherwise (1, 2) and (2, 1)
+    -- would map to different chats.
+    privateChats :: Map (Id, Id) PrivateChat,
+    bots :: Map Id Bot
+  }
 
-data BotHandler = BotHandler
-    {
-        token :: Token,
-        updates :: Queue Update
-    }
+data Bot = Bot
+  { token :: Token,
+    updates :: Seq Update
+  }
 
 -- User
--- [Chat] -> Chat Map<(user1Id,user2Id) : [Message]> 
--- Map <botid : {token::Token, updatesTohadle :: Queue Update}>  
-
+-- [Chat] -> Chat Map<(user1Id,user2Id) : [Message]>
+-- Map <botid : {token::Token, updatesTohadle :: Queue Update}>
 
 -- data Update = { id :: integer, message :: Message (to be cont.)}
 

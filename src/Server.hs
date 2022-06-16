@@ -33,5 +33,5 @@ server state token = return (ping context)
 
 app :: IO Application
 app = do
-  state <- newTVarIO (State [] [] (Map.empty))
+  state <- newTVarIO (State [] (Map.empty) (Map.empty))
   return (serve (Proxy :: Proxy Api) (server state))
