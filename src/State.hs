@@ -2,13 +2,13 @@ module State (State (State)) where
 
 import Data.Map (Map)
 import qualified Data.Map as Map
+import Data.Sequence
 import Server.Token (Token)
 import State.Chat
 import State.Id
 import State.Message (Message)
 import State.Update (Update)
 import State.User
-import Data.Sequence (Seq)
 
 data State = State
   { users :: [User],
@@ -20,7 +20,7 @@ data State = State
 
 data Bot = Bot
   { token :: Token,
-    updates :: Seq Update
+    updates :: Sequence Update
   }
 
 -- User
