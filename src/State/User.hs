@@ -1,9 +1,9 @@
-module State.User (User (User)) where
+module State.User (User (..)) where
 
 import Data.String (String)
 import Data.Text (Text)
 import Server.Token (Token)
-import State.Id
+import State.Id (Id)
 
 data User = User
   { id :: Id,
@@ -12,3 +12,4 @@ data User = User
     lastName :: Maybe Text,
     isBot :: Bool
   }
+
