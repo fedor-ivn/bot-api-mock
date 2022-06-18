@@ -40,6 +40,7 @@ library
     , base >=4.7 && <5
     , containers
     , dates
+    , mtl >2
     , servant-server
     , text
     , warp
@@ -58,6 +59,7 @@ executable bot-api-mock-exe
     , bot-api-mock
     , containers
     , dates
+    , mtl >2
     , servant-server
     , text
     , warp
@@ -77,6 +79,7 @@ test-suite bot-api-mock-test
     , bot-api-mock
     , containers
     , dates
+    , mtl >2
     , servant-server
     , text
     , warp
