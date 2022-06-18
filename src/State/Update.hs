@@ -1,7 +1,7 @@
 module State.Update (Update (Update)) where
 
-import State.Id
-import State.Message
+import State.Id ( Id )
+import State.Message ( Message )
 
 data Update = Update
   { id :: Id,
