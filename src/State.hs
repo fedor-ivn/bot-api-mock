@@ -5,12 +5,11 @@
 module State (State (..), getBot, sendMessage) where
 
 import qualified Control.Monad.State as StateM
-import Data.Bool (Bool (False))
 import Data.Dates (DateTime)
 import Data.List (find)
 import Data.Map (Map)
 import qualified Data.Map as Map
-import Data.Maybe (Maybe (Nothing), fromMaybe, listToMaybe)
+import Data.Maybe (fromMaybe)
 import Data.Sequence (Seq)
 import Data.Text (Text)
 import Server.Token (Token)
