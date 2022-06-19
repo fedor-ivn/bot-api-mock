@@ -33,6 +33,7 @@ library
       ServerState
       ServerState.BotPermissions
       ServerState.Id
+      ServerState.InitialBot
       ServerState.Message
       ServerState.PrivateChat
       ServerState.Update
