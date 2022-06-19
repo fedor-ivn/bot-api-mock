@@ -5,7 +5,7 @@
 module Server (app) where
 
 import Api.Close (close)
-import Api.GetMe (getMe)
+import Api.GetMe (Me, getMe)
 import Api.LogOut (logOut)
 import Api.Ping (Ping, ping)
 import Api.SendMessage (SendMessage, sendMessage)
@@ -22,7 +22,7 @@ import Server.Token (Token)
 import ServerState (ServerState (ServerState))
 import ServerState.Id (Id (Id))
 import ServerState.Message (Message)
-import ServerState.User (User (User))
+import ServerState.User (User (..))
 import qualified ServerState.User as User
 
 type Method a = Post '[JSON] (Response a)
@@ -30,7 +30,7 @@ type Method a = Post '[JSON] (Response a)
 type Api =
   Capture "token" Token
     :> ( "ping" :> Method Ping
-           :<|> "getMe" :> Method User
+           :<|> "getMe" :> Method Me
            :<|> "logOut" :> Method Bool
            :<|> "close" :> Method Bool
            :<|> "sendMessage" :> ReqBody '[JSON] SendMessage :> Method Message
