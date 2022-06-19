@@ -11,6 +11,13 @@ packages:
       sha256: 66742a11fd1eb1b1c287a0d82630db2bb23716b19203b0d4fb4bf69dee35e39f
   original:
     hackage: dates-0.2.3.2
+- completed:
+    hackage: aeson-flatten-0.1.0.2@sha256:b6f81235c10c8dfbca3bb250959c68ac0640640f1d2df65a4846653aa7b44d41,1281
+    pantry-tree:
+      size: 324
+      sha256: f448be02873abcb33d713b70e316ae3b5769480b8b399298f3759d2eb7969ca5
+  original:
+    hackage: aeson-flatten-0.1.0.2@sha256:b6f81235c10c8dfbca3bb250959c68ac0640640f1d2df65a4846653aa7b44d41,1281
 snapshots:
 - completed:
     size: 590100

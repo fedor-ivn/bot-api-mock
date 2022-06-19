@@ -19,7 +19,12 @@ source-repository head
 
 library
   exposed-modules:
+      Api.Close
+      Api.GetMe
+      Api.GetUpdates
+      Api.LogOut
       Api.Ping
+      Api.SendMessage
       Lib
       Server
       Server.Context
@@ -37,6 +42,7 @@ library
       src
   build-depends:
       aeson
+    , aeson-flatten
     , base >=4.7 && <5
     , containers
     , dates
@@ -55,6 +61,7 @@ executable bot-api-mock-exe
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       aeson
+    , aeson-flatten
     , base >=4.7 && <5
     , bot-api-mock
     , containers
@@ -75,6 +82,7 @@ test-suite bot-api-mock-test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       aeson
+    , aeson-flatten
     , base >=4.7 && <5
     , bot-api-mock
     , containers

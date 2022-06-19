@@ -12,6 +12,7 @@ description: Please see the README on GitLab at <https://gitlab.com/snejugal/bot
 
 dependencies:
   - aeson
+  - aeson-flatten
   - base >= 4.7 && < 5
   - servant-server
   - text
