@@ -4,7 +4,7 @@
 
 module ServerState (ServerState (..), getBot, sendMessage) where
 
-import qualified Control.Monad.State as StateM
+import Control.Monad.State (MonadState (get, put), State)
 import Data.Dates (DateTime)
 import Data.List (find)
 import Data.Map (Map)
@@ -39,38 +39,38 @@ newtype Bot = Bot
   }
 
 -- | Return a list of users from the State.
-getUsers :: StateM.State ServerState [User]
+getUsers :: State ServerState [User]
 getUsers = do
-  ServerState {users} <- StateM.get
+  ServerState {users} <- get
   return users
 
 -- | Return a user by Id from the State.
-getUser :: Id -> StateM.State ServerState (Maybe User)
+getUser :: Id -> State ServerState (Maybe User)
 getUser id = do
   users <- getUsers
   let user = Data.List.find (\x -> User.id x == id) users
   return user
 
 -- | Return a list of private chats from the State.
-getPrivateChats :: StateM.State ServerState PrivateChats
+getPrivateChats :: State ServerState PrivateChats
 getPrivateChats = do
-  ServerState {privateChats} <- StateM.get
+  ServerState {privateChats} <- get
   return privateChats
 
 -- | Return private chat by Id from the State.
-getPrivateChat :: (Id, Id) -> StateM.State ServerState (Maybe PrivateChat)
+getPrivateChat :: (Id, Id) -> State ServerState (Maybe PrivateChat)
 getPrivateChat chatId = do
   privateChats <- getPrivateChats
   return (Map.lookup chatId privateChats)
 
 -- | Add new private chat to the State.
-putPrivateChat :: (Id, Id) -> PrivateChat -> StateM.State ServerState ()
+putPrivateChat :: (Id, Id) -> PrivateChat -> State ServerState ()
 putPrivateChat chatId chat = do
-  state@ServerState {privateChats} <- StateM.get
-  StateM.put (state {privateChats = Map.insert chatId chat privateChats})
+  state@ServerState {privateChats} <- get
+  put (state {privateChats = Map.insert chatId chat privateChats})
 
 -- | Return a bot by its token from the State.
-getBot :: Token -> StateM.State ServerState (Maybe User)
+getBot :: Token -> State ServerState (Maybe User)
 getBot token = do
   users <- getUsers
   case Token.getId token of
@@ -78,7 +78,7 @@ getBot token = do
     Just id -> getUser id
 
 -- | Send new message in private chat.
-sendMessage :: Id -> Id -> DateTime -> Text -> StateM.State ServerState ()
+sendMessage :: Id -> Id -> DateTime -> Text -> State ServerState ()
 sendMessage from to date text = do
   let chatId = PrivateChat.makeId from to
 
