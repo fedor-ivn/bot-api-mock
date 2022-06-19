@@ -5,7 +5,8 @@ module Api.SendMessage where
 
 import Control.Monad.IO.Class (liftIO)
 import Control.Monad.State (State, evalState, runState)
-import Data.Aeson (FromJSON)
+import Data.Aeson (FromJSON, Options (fieldLabelModifier, omitNothingFields), camelTo2, defaultOptions)
+import Data.Aeson.Types (FromJSON (parseJSON), genericParseJSON)
 import Data.Dates (getCurrentDateTime)
 import Data.Maybe (fromMaybe)
 import Data.Text (Text)
@@ -23,7 +24,14 @@ import ServerState.Message (Message)
 
 data SendMessage = SendMessage {chatId :: Id, text :: Text} deriving (Generic)
 
-instance FromJSON SendMessage
+instance FromJSON SendMessage where
+  parseJSON = genericParseJSON options
+    where
+      options =
+        defaultOptions
+          { fieldLabelModifier = camelTo2 '_',
+            omitNothingFields = True
+          }
 
 getFrom :: Token -> Id
 getFrom token = fromMaybe (Id 0) (Token.getId token)
