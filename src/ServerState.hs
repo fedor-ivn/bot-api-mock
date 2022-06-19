@@ -78,12 +78,13 @@ getBot token = do
     Just id -> getUser id
 
 -- | Send new message in private chat.
-sendMessage :: Id -> Id -> DateTime -> Text -> State ServerState ()
+sendMessage :: Id -> Id -> DateTime -> Text -> State ServerState Message
 sendMessage from to date text = do
   let chatId = PrivateChat.makeId from to
 
   chat <- getPrivateChat chatId
   let chat' = fromMaybe PrivateChat.empty chat
-  let updatedChat = PrivateChat.addMessage chat' from date text
+  let (message, updatedChat) = PrivateChat.addMessage chat' from date text
 
   putPrivateChat chatId updatedChat
+  return message

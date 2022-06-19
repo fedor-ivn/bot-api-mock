@@ -2,7 +2,7 @@
 
 module ServerState.Id (Id (..)) where
 
-import Data.Aeson (ToJSON)
+import Data.Aeson (ToJSON, FromJSON)
 import Data.Int (Int64)
 import GHC.Generics (Generic)
 
@@ -10,3 +10,4 @@ import GHC.Generics (Generic)
 newtype Id = Id Int64 deriving (Ord, Eq, Show, Generic)
 
 instance ToJSON Id
+instance FromJSON Id
