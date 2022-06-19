@@ -1,4 +1,4 @@
-module State.Chat
+module State.PrivateChat
   ( PrivateChat (..),
     makeId,
     nextMessageId,
@@ -25,7 +25,7 @@ empty = PrivateChat []
 
 -- | Generate chat's id in the way that the least id comes first.
 --
---- >>> makeId (Id 2) (Id 1)
+-- >>> makeId (Id 2) (Id 1)
 -- (Id 1,Id 2)
 makeId :: Id -> Id -> (Id, Id)
 makeId from to

@@ -14,11 +14,11 @@ import Data.Sequence (Seq)
 import Data.Text (Text)
 import Server.Token (Token)
 import qualified Server.Token as Token
-import State.Chat (PrivateChat (PrivateChat), makeId)
-import qualified State.Chat as Chat
 import State.Id (Id (Id))
 import State.Message (Message (Message))
 import qualified State.Message as Message
+import State.PrivateChat (PrivateChat (PrivateChat), makeId)
+import qualified State.PrivateChat as PrivateChat
 import State.Update (Update)
 import State.User (User (User))
 import qualified State.User as User
@@ -80,10 +80,10 @@ getBot token = do
 -- | Send new message in private chat.
 sendMessage :: Id -> Id -> DateTime -> Text -> StateM.State State ()
 sendMessage from to date text = do
-  let chatId = Chat.makeId from to
+  let chatId = PrivateChat.makeId from to
 
   chat <- getPrivateChat chatId
-  let chat' = fromMaybe Chat.empty chat
-  let updatedChat = Chat.addMessage chat' from date text
+  let chat' = fromMaybe PrivateChat.empty chat
+  let updatedChat = PrivateChat.addMessage chat' from date text
 
   putPrivateChat chatId updatedChat

@@ -26,9 +26,9 @@ library
       Server.Response
       Server.Token
       State
-      State.Chat
       State.Id
       State.Message
+      State.PrivateChat
       State.Update
       State.User
   other-modules:
