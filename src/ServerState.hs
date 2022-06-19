@@ -2,19 +2,25 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 
-module ServerState (ServerState (..), getBot, sendMessage) where
+module ServerState (ServerState, getBot, sendMessage, initialize) where
 
 import Control.Monad.State (MonadState (get, put), State)
 import Data.Dates (DateTime)
 import Data.List (find)
+import Data.List.NonEmpty (NonEmpty)
+import qualified Data.List.NonEmpty as List.NonEmpty
 import Data.Map (Map)
 import qualified Data.Map as Map
-import Data.Maybe (fromMaybe)
+import Data.Maybe (fromJust, fromMaybe)
 import Data.Sequence (Seq)
+import qualified Data.Sequence as Seq
 import Data.Text (Text)
 import Server.Token (Token)
 import qualified Server.Token as Token
+import ServerState.BotPermissions (BotPermissions)
 import ServerState.Id (Id (Id))
+import ServerState.InitialBot (InitialBot (InitialBot))
+import qualified ServerState.InitialBot as InitialBot
 import ServerState.Message (Message (Message))
 import qualified ServerState.Message as Message
 import ServerState.PrivateChat (PrivateChat (PrivateChat), makeId)
@@ -31,12 +37,49 @@ type PrivateChats = Map (Id, Id) PrivateChat
 data ServerState = ServerState
   { users :: [User],
     privateChats :: PrivateChats,
-    bots :: Map Token Bot
+    bots :: Map Id Bot
   }
 
-newtype Bot = Bot
-  { updates :: Seq Update
+data Bot = Bot
+  { token :: Token,
+    permissions :: BotPermissions,
+    updates :: Seq Update
   }
+
+-- | Initialize a `ServerState` with at least one user and one bot.
+initialize ::
+  List.NonEmpty.NonEmpty User ->
+  List.NonEmpty.NonEmpty InitialBot ->
+  ServerState
+initialize users initialBots =
+  ServerState {users = allUsers, privateChats = Map.empty, bots}
+  where
+    users' = List.NonEmpty.toList users
+    initialBots' = List.NonEmpty.toList initialBots
+    allUsers = users' ++ botUsers
+
+    botUsers = map makeBotUser initialBots'
+    makeBotUser bot =
+      User
+        { -- TODO: `fromJust` is bad, but to properly fix it we need to
+          -- refactor `Token`
+          User.id = fromJust (Token.getId (InitialBot.token bot)),
+          User.firstName = InitialBot.name bot,
+          User.lastName = Nothing,
+          User.username = Just (InitialBot.username bot),
+          User.isBot = True
+        }
+
+    bots = Map.fromList (map makeBotsEntry initialBots')
+    makeBotsEntry initialBot = (id, bot)
+      where
+        id = fromJust (Token.getId (InitialBot.token initialBot))
+        bot =
+          Bot
+            { token = InitialBot.token initialBot,
+              permissions = InitialBot.permissions initialBot,
+              updates = Seq.empty
+            }
 
 -- | Return a list of users from the State.
 getUsers :: State ServerState [User]

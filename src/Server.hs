@@ -1,28 +1,26 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeOperators #-}
 
 module Server (app) where
 
-import Api.Close (close)
-import Api.GetMe (Me, getMe)
-import Api.LogOut (logOut)
 import Api.Ping (Ping, ping)
-import Api.SendMessage (SendMessage, sendMessage)
-import Control.Monad.IO.Class (liftIO)
-import Data.Dates (getCurrentDateTime)
-import Data.Map (Map)
-import qualified Data.Map as Map
+import Data.List.NonEmpty (NonEmpty ((:|)))
+import qualified Data.List.NonEmpty as List.NonEmpty
 import Data.Typeable (Proxy (Proxy))
 import GHC.Conc (TVar, newTVarIO)
-import Servant (Application, Capture, Handler, JSON, Post, ReqBody, Server, serve, type (:<|>) ((:<|>)), type (:>))
-import Server.Context (Context (..))
+import Servant (Application, Capture, Handler, JSON, Post, serve, type (:>))
+import Server.Context (Context (Context, state, token))
 import Server.Response (Response)
-import Server.Token (Token)
-import ServerState (ServerState (ServerState))
+import Server.Token (Token (Token))
+import ServerState (ServerState)
+import qualified ServerState
+import qualified ServerState.BotPermissions as BotPermissions
 import ServerState.Id (Id (Id))
-import ServerState.Message (Message)
-import ServerState.User (User (..))
+import ServerState.InitialBot (InitialBot (InitialBot))
+import qualified ServerState.InitialBot as InitialBot
+import ServerState.User (User (User))
 import qualified ServerState.User as User
 
 type Method a = Post '[JSON] (Response a)
@@ -30,23 +28,31 @@ type Method a = Post '[JSON] (Response a)
 type Api =
   Capture "token" Token
     :> ( "ping" :> Method Ping
-           :<|> "getMe" :> Method Me
-           :<|> "logOut" :> Method Bool
-           :<|> "close" :> Method Bool
-           :<|> "sendMessage" :> ReqBody '[JSON] SendMessage :> Method Message
        )
 
-server :: TVar ServerState -> Server Api
-server state token =
-  return (ping context)
-    :<|> getMe context
-    :<|> logOut
-    :<|> close
-    :<|> sendMessage context
+server :: TVar ServerState -> Token -> Handler (Response Ping)
+server state token = return (ping context)
   where
     context = Context {state, token}
 
 app :: IO Application
 app = do
-  state <- newTVarIO (ServerState [] Map.empty Map.empty)
+  state <- newTVarIO initialState
   return (serve (Proxy :: Proxy Api) (server state))
+  where
+    initialState = ServerState.initialize (user :| []) (bot :| [])
+    user =
+      User
+        { User.id = Id 1,
+          User.firstName = "User",
+          User.lastName = Nothing,
+          User.username = Nothing,
+          User.isBot = False
+        }
+    bot =
+      InitialBot
+        { InitialBot.token = Token "2:random-characters",
+          InitialBot.name = "Bot",
+          InitialBot.username = "a_bot",
+          InitialBot.permissions = BotPermissions.defaultPermissions
+        }
