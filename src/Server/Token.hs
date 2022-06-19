@@ -2,11 +2,11 @@
 
 module Server.Token (Token (Token), getId) where
 
+import Data.Maybe (listToMaybe)
 import Data.Text (Text)
 import qualified Data.Text as Text
 import Servant (FromHttpApiData (parseQueryParam, parseUrlPiece))
-import State.Id (Id(..))
-import Data.Maybe (listToMaybe)
+import ServerState.Id (Id (Id))
 import Text.Read (readMaybe)
 
 -- | A bot's token.
@@ -25,6 +25,6 @@ instance FromHttpApiData Token where
 -- Nothing
 getId :: Token -> Maybe Id
 getId (Token token) = do
-  rawId <- listToMaybe (Text.split (==':') token)
+  rawId <- listToMaybe (Text.split (== ':') token)
   id <- readMaybe (Text.unpack rawId)
   return (Id id)

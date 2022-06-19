@@ -1,4 +1,4 @@
-module State.PrivateChat
+module ServerState.PrivateChat
   ( PrivateChat (..),
     makeId,
     nextMessageId,
@@ -12,9 +12,9 @@ import Data.Map (Map)
 import qualified Data.Map as Map
 import Data.Maybe (listToMaybe)
 import Data.Text (Text)
-import State.Id (Id (..))
-import State.Message (Message (Message))
-import qualified State.Message as Message
+import ServerState.Id (Id (Id))
+import ServerState.Message (Message (Message))
+import qualified ServerState.Message as Message
 
 -- | A private chat between two users.
 newtype PrivateChat = PrivateChat [Message]

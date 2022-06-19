@@ -1,7 +1,7 @@
-module State.User (User (..)) where
+module ServerState.User (User (..)) where
 
 import Data.Text (Text)
-import State.Id (Id)
+import ServerState.Id (Id)
 
 data User = User
   { id :: Id,

@@ -1,8 +1,8 @@
-module State.Message (Message (..)) where
+module ServerState.Message (Message (..)) where
 
 import Data.Dates (DateTime)
 import Data.Text (Text)
-import State.Id (Id)
+import ServerState.Id (Id)
 
 data Message = Message
   { id :: Id,

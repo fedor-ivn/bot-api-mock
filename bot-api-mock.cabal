@@ -25,12 +25,12 @@ library
       Server.Context
       Server.Response
       Server.Token
-      State
-      State.Id
-      State.Message
-      State.PrivateChat
-      State.Update
-      State.User
+      ServerState
+      ServerState.Id
+      ServerState.Message
+      ServerState.PrivateChat
+      ServerState.Update
+      ServerState.User
   other-modules:
       Paths_bot_api_mock
   hs-source-dirs:

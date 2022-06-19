@@ -2,7 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 
-module State (ServerState (..), getBot, sendMessage) where
+module ServerState (ServerState (..), getBot, sendMessage) where
 
 import qualified Control.Monad.State as StateM
 import Data.Dates (DateTime)
@@ -14,14 +14,14 @@ import Data.Sequence (Seq)
 import Data.Text (Text)
 import Server.Token (Token)
 import qualified Server.Token as Token
-import State.Id (Id (Id))
-import State.Message (Message (Message))
-import qualified State.Message as Message
-import State.PrivateChat (PrivateChat (PrivateChat), makeId)
-import qualified State.PrivateChat as PrivateChat
-import State.Update (Update)
-import State.User (User (User))
-import qualified State.User as User
+import ServerState.Id (Id (Id))
+import ServerState.Message (Message (Message))
+import qualified ServerState.Message as Message
+import ServerState.PrivateChat (PrivateChat (PrivateChat), makeId)
+import qualified ServerState.PrivateChat as PrivateChat
+import ServerState.Update (Update)
+import ServerState.User (User (User))
+import qualified ServerState.User as User
 
 -- The IDs are sorted in ascending order, as otherwise (1, 2) and (2, 1)
 -- would map to different chats. Use `PrivateChat.makeChatId` to generate such

@@ -13,7 +13,7 @@ import Servant (Application, Capture, Handler, JSON, Post, serve, type (:>))
 import Server.Context (Context (Context, state, token))
 import Server.Response (Response)
 import Server.Token (Token)
-import State (ServerState (ServerState))
+import ServerState (ServerState (ServerState))
 
 type Method a = Post '[JSON] (Response a)
 

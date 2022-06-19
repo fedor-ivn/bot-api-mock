@@ -1,4 +1,4 @@
-module State.Id (Id (..)) where
+module ServerState.Id (Id (..)) where
 
 import Data.Int (Int64)
 
