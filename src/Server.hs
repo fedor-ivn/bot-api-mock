@@ -13,7 +13,7 @@ import Servant (Application, Capture, Handler, JSON, Post, serve, type (:>))
 import Server.Context (Context (Context, state, token))
 import Server.Response (Response)
 import Server.Token (Token)
-import State (State (State))
+import State (ServerState (ServerState))
 
 type Method a = Post '[JSON] (Response a)
 
@@ -22,12 +22,12 @@ type Api =
     :> ( "ping" :> Method Ping
        )
 
-server :: TVar State -> Token -> Handler (Response Ping)
+server :: TVar ServerState -> Token -> Handler (Response Ping)
 server state token = return (ping context)
   where
     context = Context {state, token}
 
 app :: IO Application
 app = do
-  state <- newTVarIO (State [] Map.empty Map.empty)
+  state <- newTVarIO (ServerState [] Map.empty Map.empty)
   return (serve (Proxy :: Proxy Api) (server state))
