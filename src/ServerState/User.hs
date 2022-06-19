@@ -1,6 +1,10 @@
+{-# LANGUAGE DeriveGeneric #-}
+
 module ServerState.User (User (..)) where
 
+import Data.Aeson (ToJSON)
 import Data.Text (Text)
+import GHC.Generics (Generic)
 import ServerState.Id (Id)
 
 data User = User
@@ -10,3 +14,6 @@ data User = User
     lastName :: Maybe Text,
     isBot :: Bool
   }
+  deriving (Generic)
+
+instance ToJSON User
