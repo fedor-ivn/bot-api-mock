@@ -5,19 +5,15 @@
 module Server (app) where
 
 import Api.Ping (Ping, ping)
-import Control.Monad.IO.Class (liftIO)
+import Data.Map (Map)
+import qualified Data.Map as Map
 import Data.Typeable (Proxy (Proxy))
 import GHC.Conc (TVar, newTVarIO)
 import Servant (Application, Capture, Handler, JSON, Post, serve, type (:>))
 import Server.Context (Context (Context, state, token))
-import Server.Response
-  ( Response (Error, Ok, description, parameters),
-    ResponseParameters (ResponseParameters, migrateToChatId, retryAfter),
-  )
+import Server.Response (Response)
 import Server.Token (Token)
 import State (State (State))
-import Data.Map (Map)
-import qualified Data.Map as Map
 
 type Method a = Post '[JSON] (Response a)
 
