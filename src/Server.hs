@@ -20,6 +20,7 @@ import qualified ServerState.BotPermissions as BotPermissions
 import ServerState.Id (Id (Id))
 import ServerState.InitialBot (InitialBot (InitialBot))
 import qualified ServerState.InitialBot as InitialBot
+import ServerState.Message (Message (..))
 import ServerState.User (User (User))
 import qualified ServerState.User as User
 

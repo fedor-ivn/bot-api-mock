@@ -21,7 +21,6 @@ library
   exposed-modules:
       Api.Close
       Api.GetMe
-      Api.GetUpdates
       Api.LogOut
       Api.Ping
       Api.SendMessage
