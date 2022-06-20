@@ -1,40 +1,47 @@
+{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module Api.GetMe where
 
-import Control.Monad.State (State, liftIO, runState)
-import Data.Aeson (ToJSON (toJSON), object, (.=))
+import Control.Monad.State (MonadState (get, put), State, liftIO, runState)
+import Data.Aeson (Options (fieldLabelModifier, omitNothingFields), ToJSON (toEncoding, toJSON), defaultOptions, genericParseJSON, genericToEncoding, object, pairs, (.=))
 import Data.Aeson.Flatten (mergeTo)
-import Data.Text
+import Data.Map (Map, lookup)
+import Data.Maybe (fromJust)
+import Data.Text ()
 import GHC.Conc (TVar (TVar), readTVarIO)
+import GHC.Generics (Generic)
 import Servant (Handler (Handler))
 import Server.Context (Context (..))
 import Server.Response (Response (..))
 import Server.Token (Token)
-import ServerState (ServerState, getBot)
+import ServerState (Bot (Bot, permissions), ServerState (ServerState, bots), getBot)
+import ServerState.BotPermissions (BotPermissions)
 import ServerState.Id (Id (..))
-import ServerState.User (User (User))
+import ServerState.User (User (User, id))
 
-data Me = Me
-  { user :: User,
-    canJoinGroups :: Bool
-  }
+data Me = Me User BotPermissions
+  deriving (Generic)
 
 instance ToJSON Me where
-  toJSON Me {user, canJoinGroups} = mergeTo me (toJSON user)
-    where
-      me = object ["can_join_groups" .= canJoinGroups]
+  toJSON (Me bot permissions) = mergeTo (toJSON bot) (toJSON permissions)
 
-createMe :: User -> Me
-createMe user = Me {user = user, canJoinGroups = False}
+getBotPermissions :: Id -> Map Id Bot -> BotPermissions
+getBotPermissions id botMap =
+  permissions (fromJust (Data.Map.lookup id botMap))
+
+createMe :: Map Id Bot -> User -> Me
+createMe map user =
+  Me user (getBotPermissions (ServerState.User.id user) map)
 
 getMe' :: Token -> State ServerState (Response Me)
 getMe' token = do
   bot <- ServerState.getBot token
+  ServerState {bots} <- get
   case bot of
     Nothing -> return unathorized
-    Just bot -> return (Ok (createMe bot))
+    Just bot -> return (Ok (createMe bots bot))
   where
     unathorized = Error {description = "Unathorized", parameters = Nothing}
 

@@ -2,7 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 
-module ServerState (ServerState, getBot, sendMessage, initialize) where
+module ServerState (ServerState (..), Bot (..), getBot, sendMessage, initialize) where
 
 import Control.Monad.State (MonadState (get, put), State)
 import Data.Dates (DateTime)
