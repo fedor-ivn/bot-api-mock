@@ -15,12 +15,14 @@ import Data.List.NonEmpty (NonEmpty ((:|)))
 import qualified Data.List.NonEmpty as List.NonEmpty
 import Data.Map (Map)
 import qualified Data.Map as Map
+import Data.Maybe (fromJust)
 import Data.Typeable (Proxy (Proxy))
 import GHC.Conc (TVar, newTVarIO)
 import Servant (Application, Capture, Handler, JSON, Post, ReqBody, Server, serve, type (:<|>) ((:<|>)), type (:>))
 import Server.Context (Context (..))
 import Server.Response (Response)
-import Server.Token (Token (Token))
+import Server.Token (Token)
+import qualified Server.Token as Token
 import ServerState (ServerState)
 import qualified ServerState
 import qualified ServerState.BotPermissions as BotPermissions
@@ -68,7 +70,9 @@ app = do
         }
     bot =
       InitialBot
-        { InitialBot.token = Token "2:random-characters",
+        { -- SAFETY: `Token.parse` is called on a literal, so we can guarantee
+          -- that it returns `Just`. Calling `fromJust` on a `Just` is safe.
+          InitialBot.token = fromJust (Token.parse "2:random-characters"),
           InitialBot.name = "Bot",
           InitialBot.username = "a_bot",
           InitialBot.permissions = BotPermissions.defaultPermissions

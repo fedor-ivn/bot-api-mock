@@ -10,7 +10,7 @@ import Data.List.NonEmpty (NonEmpty)
 import qualified Data.List.NonEmpty as List.NonEmpty
 import Data.Map (Map)
 import qualified Data.Map as Map
-import Data.Maybe (fromJust, fromMaybe)
+import Data.Maybe (fromMaybe)
 import Data.Sequence (Seq)
 import qualified Data.Sequence as Seq
 import Data.Text (Text)
@@ -59,9 +59,7 @@ initialize users initialBots =
     botUsers = map makeBotUser initialBots'
     makeBotUser bot =
       User
-        { -- TODO: `fromJust` is bad, but to properly fix it we need to
-          -- refactor `Token`
-          User.id = fromJust (Token.getId (InitialBot.token bot)),
+        { User.id = Token.getId (InitialBot.token bot),
           User.firstName = InitialBot.name bot,
           User.lastName = Nothing,
           User.username = Just (InitialBot.username bot),
@@ -71,7 +69,7 @@ initialize users initialBots =
     bots = Map.fromList (map makeBotsEntry initialBots')
     makeBotsEntry initialBot = (id, bot)
       where
-        id = fromJust (Token.getId (InitialBot.token initialBot))
+        id = Token.getId (InitialBot.token initialBot)
         bot =
           Bot
             { Bot.token = InitialBot.token initialBot,
@@ -118,11 +116,7 @@ getBots = do
 
 -- | Return a bot by its token from the State.
 getBot :: Token -> State ServerState (Maybe User)
-getBot token = do
-  users <- getUsers
-  case Token.getId token of
-    Nothing -> return Nothing
-    Just id -> getUser id
+getBot token = getUser (Token.getId token)
 
 -- | Send new message in private chat.
 sendMessage :: Id -> Id -> Time -> Text -> State ServerState Message

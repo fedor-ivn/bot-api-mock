@@ -20,7 +20,7 @@ import GHC.Generics (Generic)
 import Servant (Handler)
 import Server.Context (Context (Context, state, token))
 import Server.Response (Response (Ok))
-import Server.Token (Token (Token))
+import Server.Token (Token)
 import qualified Server.Token as Token
 import ServerState (ServerState)
 import qualified ServerState
@@ -43,16 +43,13 @@ instance FromJSON SendMessage where
             omitNothingFields = True
           }
 
-getFrom :: Token -> Id
-getFrom token = fromMaybe (Id 0) (Token.getId token)
-
 sendMessage :: Context -> SendMessage -> Handler (Response Message)
 sendMessage Context {state, token} SendMessage {chatId, text} = do
   date <- Time <$> liftIO getCurrentTime
   liftIO $
     atomically $ do
       state' <- readTVar state
-      let from = getFrom token
+      let from = Token.getId token
       let to = chatId
       let (message, newState) =
             runState (ServerState.sendMessage from to date text) state'
