@@ -4,9 +4,14 @@
 module Api.SendMessage (SendMessage, sendMessage) where
 
 import Control.Monad.IO.Class (liftIO)
-import Control.Monad.State (State, evalState, runState)
-import Data.Aeson (FromJSON, Options (fieldLabelModifier, omitNothingFields), camelTo2, defaultOptions)
-import Data.Aeson.Types (FromJSON (parseJSON), genericParseJSON)
+import Control.Monad.State (runState)
+import Data.Aeson
+  ( FromJSON (parseJSON),
+    Options (fieldLabelModifier, omitNothingFields),
+    camelTo2,
+    defaultOptions,
+    genericParseJSON,
+  )
 import Data.Maybe (fromMaybe)
 import Data.Text (Text)
 import Data.Time.Clock (getCurrentTime)
@@ -18,12 +23,16 @@ import Server.Response (Response (Ok))
 import Server.Token (Token (Token))
 import qualified Server.Token as Token
 import ServerState (ServerState)
-import qualified ServerState as ServerSate
-import ServerState.Id (Id (..))
+import qualified ServerState
+import ServerState.Id (Id (Id))
 import ServerState.Message (Message)
 import ServerState.Time (Time (Time))
 
-data SendMessage = SendMessage {chatId :: Id, text :: Text} deriving (Generic)
+data SendMessage = SendMessage
+  { chatId :: Id,
+    text :: Text
+  }
+  deriving (Generic)
 
 instance FromJSON SendMessage where
   parseJSON = genericParseJSON options
@@ -46,6 +55,6 @@ sendMessage Context {state, token} SendMessage {chatId, text} = do
       let from = getFrom token
       let to = chatId
       let (message, newState) =
-            runState (ServerSate.sendMessage from to date text) state'
+            runState (ServerState.sendMessage from to date text) state'
       writeTVar state newState
       return (Ok message)
