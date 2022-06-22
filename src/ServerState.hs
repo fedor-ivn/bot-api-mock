@@ -36,10 +36,12 @@ import qualified ServerState.User as User
 -- an id.
 type PrivateChats = Map (Id, Id) PrivateChat
 
+type Bots = Map Id Bot
+
 data ServerState = ServerState
   { users :: [User],
     privateChats :: PrivateChats,
-    bots :: Map Id Bot
+    bots :: Bots
   }
 
 -- | Initialize a `ServerState` with at least one user and one bot.
