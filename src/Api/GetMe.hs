@@ -8,6 +8,7 @@ import Control.Monad.State (MonadState (get, put), State, liftIO, runState)
 import Data.Aeson (Options (fieldLabelModifier, omitNothingFields), ToJSON (toEncoding, toJSON), defaultOptions, genericParseJSON, genericToEncoding, object, pairs, (.=))
 import Data.Aeson.Flatten (mergeTo)
 import Data.Map (Map, lookup)
+import qualified Data.Map as Map
 import Data.Maybe (fromJust)
 import Data.Text ()
 import GHC.Conc (TVar (TVar), readTVarIO)
@@ -17,11 +18,12 @@ import Server.Context (Context (..))
 import Server.Response (Response (..))
 import Server.Token (Token)
 import ServerState (ServerState (ServerState, bots), getBot)
-import ServerState.Bot (Bot)
+import ServerState.Bot (Bot (Bot))
 import qualified ServerState.Bot as Bot
 import ServerState.BotPermissions (BotPermissions)
 import ServerState.Id (Id (..))
-import ServerState.User (User (User, id))
+import ServerState.User (User (User))
+import qualified ServerState.User as User
 
 data Me = Me User BotPermissions
   deriving (Generic)
@@ -29,13 +31,11 @@ data Me = Me User BotPermissions
 instance ToJSON Me where
   toJSON (Me bot permissions) = mergeTo (toJSON bot) (toJSON permissions)
 
-getBotPermissions :: Id -> Map Id Bot -> BotPermissions
-getBotPermissions id botMap =
-  Bot.permissions (fromJust (Data.Map.lookup id botMap))
-
 createMe :: Map Id Bot -> User -> Me
-createMe map user =
-  Me user (getBotPermissions (ServerState.User.id user) map)
+createMe bots user@User {User.id} = Me user permissions
+  where
+    -- todo: get rid of `fromJust`
+    Bot {Bot.permissions} = fromJust (Map.lookup id bots)
 
 getMe' :: Token -> State ServerState (Response Me)
 getMe' token = do
