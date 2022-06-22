@@ -7,7 +7,6 @@ module ServerState.PrivateChat
   )
 where
 
-import Data.Dates (DateTime)
 import Data.Map (Map)
 import qualified Data.Map as Map
 import Data.Maybe (listToMaybe)
@@ -15,6 +14,7 @@ import Data.Text (Text)
 import ServerState.Id (Id (Id))
 import ServerState.Message (Message (Message))
 import qualified ServerState.Message as Message
+import ServerState.Time (Time)
 
 -- | A private chat between two users.
 newtype PrivateChat = PrivateChat [Message]
@@ -39,7 +39,7 @@ nextMessageId (PrivateChat messages) = Id (lastId + 1)
     (Id lastId) = maybe (Id 0) Message.id (listToMaybe messages)
 
 -- | Add new message to a private chat.
-addMessage :: PrivateChat -> Id -> DateTime -> Text -> (Message, PrivateChat)
+addMessage :: PrivateChat -> Id -> Time -> Text -> (Message, PrivateChat)
 addMessage chat@(PrivateChat messages) from date text =
   (message, PrivateChat (message : messages))
   where
