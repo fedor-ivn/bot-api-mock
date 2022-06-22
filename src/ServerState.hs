@@ -5,7 +5,6 @@
 module ServerState (ServerState (..), Bot (..), getBot, sendMessage, initialize) where
 
 import Control.Monad.State (MonadState (get, put), State)
-import Data.Dates (DateTime)
 import Data.List (find)
 import Data.List.NonEmpty (NonEmpty)
 import qualified Data.List.NonEmpty as List.NonEmpty
@@ -28,6 +27,7 @@ import qualified ServerState.PrivateChat as PrivateChat
 import ServerState.Update (Update)
 import ServerState.User (User (User))
 import qualified ServerState.User as User
+import ServerState.Time (Time)
 
 -- The IDs are sorted in ascending order, as otherwise (1, 2) and (2, 1)
 -- would map to different chats. Use `PrivateChat.makeChatId` to generate such
@@ -121,7 +121,7 @@ getBot token = do
     Just id -> getUser id
 
 -- | Send new message in private chat.
-sendMessage :: Id -> Id -> DateTime -> Text -> State ServerState Message
+sendMessage :: Id -> Id -> Time -> Text -> State ServerState Message
 sendMessage from to date text = do
   let chatId = PrivateChat.makeId from to
 

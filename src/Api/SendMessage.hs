@@ -7,9 +7,9 @@ import Control.Monad.IO.Class (liftIO)
 import Control.Monad.State (State, evalState, runState)
 import Data.Aeson (FromJSON, Options (fieldLabelModifier, omitNothingFields), camelTo2, defaultOptions)
 import Data.Aeson.Types (FromJSON (parseJSON), genericParseJSON)
-import Data.Dates (getCurrentDateTime)
 import Data.Maybe (fromMaybe)
 import Data.Text (Text)
+import Data.Time.Clock (getCurrentTime)
 import GHC.Conc (atomically, readTVar, writeTVar)
 import GHC.Generics (Generic)
 import Servant (Handler)
@@ -21,6 +21,7 @@ import ServerState (ServerState, sendMessage)
 import qualified ServerState as ServerSate
 import ServerState.Id (Id (..))
 import ServerState.Message (Message)
+import ServerState.Time (Time (Time))
 
 data SendMessage = SendMessage {chatId :: Id, text :: Text} deriving (Generic)
 
@@ -38,7 +39,7 @@ getFrom token = fromMaybe (Id 0) (Token.getId token)
 
 sendMessage :: Context -> SendMessage -> Handler (Response Message)
 sendMessage Context {state, token} SendMessage {chatId, text} = do
-  date <- liftIO getCurrentDateTime
+  date <- Time <$> liftIO getCurrentTime
   liftIO $
     atomically $ do
       state' <- readTVar state

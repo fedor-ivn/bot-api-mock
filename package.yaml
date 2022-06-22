@@ -18,7 +18,6 @@ dependencies:
   - text
   - warp
   - containers
-  - dates
   - mtl > 2
   - time > 1
 

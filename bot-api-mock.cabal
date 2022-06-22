@@ -47,7 +47,6 @@ library
     , aeson-flatten
     , base >=4.7 && <5
     , containers
-    , dates
     , mtl >2
     , servant-server
     , text
@@ -68,7 +67,6 @@ executable bot-api-mock-exe
     , base >=4.7 && <5
     , bot-api-mock
     , containers
-    , dates
     , mtl >2
     , servant-server
     , text
@@ -90,7 +88,6 @@ test-suite bot-api-mock-test
     , base >=4.7 && <5
     , bot-api-mock
     , containers
-    , dates
     , mtl >2
     , servant-server
     , text

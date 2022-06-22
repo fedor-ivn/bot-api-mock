@@ -5,13 +5,20 @@
 
 module Server (app) where
 
+import Api.Close (close)
+import Api.GetMe (Me, getMe)
+import Api.LogOut (logOut)
 import Api.Ping (Ping, ping)
+import Api.SendMessage (SendMessage, sendMessage)
+import Control.Monad.IO.Class (liftIO)
 import Data.List.NonEmpty (NonEmpty ((:|)))
 import qualified Data.List.NonEmpty as List.NonEmpty
+import Data.Map (Map)
+import qualified Data.Map as Map
 import Data.Typeable (Proxy (Proxy))
 import GHC.Conc (TVar, newTVarIO)
-import Servant (Application, Capture, Handler, JSON, Post, serve, type (:>))
-import Server.Context (Context (Context, state, token))
+import Servant (Application, Capture, Handler, JSON, Post, ReqBody, Server, serve, type (:<|>) ((:<|>)), type (:>))
+import Server.Context (Context (..))
 import Server.Response (Response)
 import Server.Token (Token (Token))
 import ServerState (ServerState)
@@ -29,10 +36,19 @@ type Method a = Post '[JSON] (Response a)
 type Api =
   Capture "token" Token
     :> ( "ping" :> Method Ping
+           :<|> "getMe" :> Method Me
+           :<|> "logOut" :> Method Bool
+           :<|> "close" :> Method Bool
+           :<|> "sendMessage" :> ReqBody '[JSON] SendMessage :> Method Message
        )
 
-server :: TVar ServerState -> Token -> Handler (Response Ping)
-server state token = return (ping context)
+server :: TVar ServerState -> Server Api
+server state token =
+  return (ping context)
+    :<|> getMe context
+    :<|> logOut
+    :<|> close
+    :<|> sendMessage context
   where
     context = Context {state, token}
 
