@@ -1,4 +1,4 @@
-module Api.Close where
+module Api.Close (close) where
 
 import Server.Response (Response (Ok))
 import Servant (Handler)

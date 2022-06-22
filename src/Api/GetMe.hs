@@ -2,7 +2,7 @@
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Api.GetMe where
+module Api.GetMe (Me, getMe) where
 
 import Control.Monad.State (MonadState (get, put), State, liftIO, runState)
 import Data.Aeson (Options (fieldLabelModifier, omitNothingFields), ToJSON (toEncoding, toJSON), defaultOptions, genericParseJSON, genericToEncoding, object, pairs, (.=))

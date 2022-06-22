@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE NamedFieldPuns #-}
 
-module Api.SendMessage where
+module Api.SendMessage (SendMessage, sendMessage) where
 
 import Control.Monad.IO.Class (liftIO)
 import Control.Monad.State (State, evalState, runState)
@@ -17,7 +17,7 @@ import Server.Context (Context (Context, state, token))
 import Server.Response (Response (Ok))
 import Server.Token (Token (Token))
 import qualified Server.Token as Token
-import ServerState (ServerState, sendMessage)
+import ServerState (ServerState)
 import qualified ServerState as ServerSate
 import ServerState.Id (Id (..))
 import ServerState.Message (Message)

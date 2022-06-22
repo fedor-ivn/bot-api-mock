@@ -1,7 +1,7 @@
-module Api.LogOut where
+module Api.LogOut (logOut) where
 
-import Server.Response (Response (Ok))
 import Servant (Handler)
+import Server.Response (Response (Ok))
 
 logOut :: Handler (Response Bool)
 logOut = return (Ok True)
