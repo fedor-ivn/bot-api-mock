@@ -16,7 +16,9 @@ import Servant (Handler (Handler))
 import Server.Context (Context (..))
 import Server.Response (Response (..))
 import Server.Token (Token)
-import ServerState (Bot (Bot, permissions), ServerState (ServerState, bots), getBot)
+import ServerState (ServerState (ServerState, bots), getBot)
+import ServerState.Bot (Bot)
+import qualified ServerState.Bot as Bot
 import ServerState.BotPermissions (BotPermissions)
 import ServerState.Id (Id (..))
 import ServerState.User (User (User, id))
@@ -29,7 +31,7 @@ instance ToJSON Me where
 
 getBotPermissions :: Id -> Map Id Bot -> BotPermissions
 getBotPermissions id botMap =
-  permissions (fromJust (Data.Map.lookup id botMap))
+  Bot.permissions (fromJust (Data.Map.lookup id botMap))
 
 createMe :: Map Id Bot -> User -> Me
 createMe map user =

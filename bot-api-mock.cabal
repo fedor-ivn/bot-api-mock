@@ -30,6 +30,7 @@ library
       Server.Response
       Server.Token
       ServerState
+      ServerState.Bot
       ServerState.BotPermissions
       ServerState.Id
       ServerState.InitialBot

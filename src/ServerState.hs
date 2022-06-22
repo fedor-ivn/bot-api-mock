@@ -2,7 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 
-module ServerState (ServerState (..), Bot (..), getBot, sendMessage, initialize) where
+module ServerState (ServerState (..), getBot, sendMessage, initialize) where
 
 import Control.Monad.State (MonadState (get, put), State)
 import Data.List (find)
@@ -16,6 +16,8 @@ import qualified Data.Sequence as Seq
 import Data.Text (Text)
 import Server.Token (Token)
 import qualified Server.Token as Token
+import ServerState.Bot (Bot (Bot))
+import qualified ServerState.Bot as Bot
 import ServerState.BotPermissions (BotPermissions)
 import ServerState.Id (Id (Id))
 import ServerState.InitialBot (InitialBot (InitialBot))
@@ -24,10 +26,10 @@ import ServerState.Message (Message (Message))
 import qualified ServerState.Message as Message
 import ServerState.PrivateChat (PrivateChat (PrivateChat), makeId)
 import qualified ServerState.PrivateChat as PrivateChat
+import ServerState.Time (Time)
 import ServerState.Update (Update)
 import ServerState.User (User (User))
 import qualified ServerState.User as User
-import ServerState.Time (Time)
 
 -- The IDs are sorted in ascending order, as otherwise (1, 2) and (2, 1)
 -- would map to different chats. Use `PrivateChat.makeChatId` to generate such
@@ -38,12 +40,6 @@ data ServerState = ServerState
   { users :: [User],
     privateChats :: PrivateChats,
     bots :: Map Id Bot
-  }
-
-data Bot = Bot
-  { token :: Token,
-    permissions :: BotPermissions,
-    updates :: Seq Update
   }
 
 -- | Initialize a `ServerState` with at least one user and one bot.
@@ -76,9 +72,9 @@ initialize users initialBots =
         id = fromJust (Token.getId (InitialBot.token initialBot))
         bot =
           Bot
-            { token = InitialBot.token initialBot,
-              permissions = InitialBot.permissions initialBot,
-              updates = Seq.empty
+            { Bot.token = InitialBot.token initialBot,
+              Bot.permissions = InitialBot.permissions initialBot,
+              Bot.updates = Seq.empty
             }
 
 -- | Return a list of users from the State.
