@@ -2,7 +2,13 @@
 
 module ServerState.User (User (..)) where
 
-import Data.Aeson (Options (fieldLabelModifier, omitNothingFields), ToJSON (toJSON), camelTo2, defaultOptions, genericToJSON)
+import Data.Aeson
+  ( Options (fieldLabelModifier, omitNothingFields),
+    ToJSON (toJSON),
+    camelTo2,
+    defaultOptions,
+    genericToJSON,
+  )
 import Data.Text (Text)
 import GHC.Generics (Generic)
 import ServerState.Id (Id)
@@ -19,4 +25,8 @@ data User = User
 instance ToJSON User where
   toJSON = genericToJSON options
     where
-      options = defaultOptions {fieldLabelModifier = camelTo2 '_', omitNothingFields = True}
+      options =
+        defaultOptions
+          { fieldLabelModifier = camelTo2 '_',
+            omitNothingFields = True
+          }
