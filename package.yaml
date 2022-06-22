@@ -20,6 +20,7 @@ dependencies:
   - containers
   - dates
   - mtl > 2
+  - time > 1
 
 library:
   source-dirs: src
