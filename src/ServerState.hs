@@ -2,7 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 
-module ServerState (ServerState (..), getBot, sendMessage, initialize) where
+module ServerState (ServerState, getBot, getBots, sendMessage, initialize) where
 
 import Control.Monad.State (MonadState (get, put), State)
 import Data.List (find)
@@ -109,6 +109,12 @@ putPrivateChat :: (Id, Id) -> PrivateChat -> State ServerState ()
 putPrivateChat chatId chat = do
   state@ServerState {privateChats} <- get
   put (state {privateChats = Map.insert chatId chat privateChats})
+
+-- | Return a map of bots from the state.
+getBots :: State ServerState Bots
+getBots = do
+  ServerState {bots} <- get
+  return bots
 
 -- | Return a bot by its token from the State.
 getBot :: Token -> State ServerState (Maybe User)

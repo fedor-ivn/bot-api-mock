@@ -3,7 +3,7 @@
 
 module Api.GetMe (Me, getMe) where
 
-import Control.Monad.State (MonadState (get), State, liftIO, runState)
+import Control.Monad.State (State, liftIO, runState)
 import Data.Aeson (ToJSON (toJSON))
 import Data.Aeson.Flatten (mergeTo)
 import Data.Map (Map)
@@ -14,7 +14,7 @@ import Servant (Handler)
 import Server.Context (Context (..))
 import Server.Response (Response (..))
 import Server.Token (Token)
-import ServerState (ServerState (ServerState, bots))
+import ServerState (ServerState)
 import qualified ServerState
 import ServerState.Bot (Bot (Bot))
 import qualified ServerState.Bot as Bot
@@ -37,7 +37,7 @@ createMe bots user@User {User.id} = Me user permissions
 getMe' :: Token -> State ServerState (Response Me)
 getMe' token = do
   bot <- ServerState.getBot token
-  ServerState {bots} <- get
+  bots <- ServerState.getBots
   case bot of
     Nothing -> return unathorized
     Just bot -> return (Ok (createMe bots bot))
