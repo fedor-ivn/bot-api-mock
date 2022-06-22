@@ -1,32 +1,29 @@
-{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module Api.GetMe (Me, getMe) where
 
-import Control.Monad.State (MonadState (get, put), State, liftIO, runState)
-import Data.Aeson (Options (fieldLabelModifier, omitNothingFields), ToJSON (toEncoding, toJSON), defaultOptions, genericParseJSON, genericToEncoding, object, pairs, (.=))
+import Control.Monad.State (MonadState (get), State, liftIO, runState)
+import Data.Aeson (ToJSON (toJSON))
 import Data.Aeson.Flatten (mergeTo)
-import Data.Map (Map, lookup)
+import Data.Map (Map)
 import qualified Data.Map as Map
 import Data.Maybe (fromJust)
-import Data.Text ()
 import GHC.Conc (TVar (TVar), readTVarIO)
-import GHC.Generics (Generic)
-import Servant (Handler (Handler))
+import Servant (Handler)
 import Server.Context (Context (..))
 import Server.Response (Response (..))
 import Server.Token (Token)
-import ServerState (ServerState (ServerState, bots), getBot)
+import ServerState (ServerState (ServerState, bots))
+import qualified ServerState
 import ServerState.Bot (Bot (Bot))
 import qualified ServerState.Bot as Bot
 import ServerState.BotPermissions (BotPermissions)
-import ServerState.Id (Id (..))
+import ServerState.Id (Id)
 import ServerState.User (User (User))
 import qualified ServerState.User as User
 
 data Me = Me User BotPermissions
-  deriving (Generic)
 
 instance ToJSON Me where
   toJSON (Me bot permissions) = mergeTo (toJSON bot) (toJSON permissions)
