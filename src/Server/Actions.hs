@@ -5,7 +5,7 @@ import Control.Monad.Cont (MonadIO, liftIO)
 import qualified Server.Token as Token
 import ServerState.Id (Id)
 
-data ActionKind = GetMe | SendMessage
+data ActionKind = GetMe | SendMessage | LogOut | Close
 
 data Action = Action Id ActionKind
 

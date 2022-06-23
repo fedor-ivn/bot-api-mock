@@ -50,8 +50,8 @@ server :: TVar ServerState -> Actions -> Server Api
 server state actions token =
   return (ping context)
     :<|> getMe context
-    :<|> logOut
-    :<|> close
+    :<|> logOut context
+    :<|> close context
     :<|> sendMessage context
   where
     context = Context {state, token, actions}
