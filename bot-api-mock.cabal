@@ -26,6 +26,7 @@ library
       Api.SendMessage
       Lib
       Server
+      Server.Actions
       Server.Context
       Server.Response
       Server.Token

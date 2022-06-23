@@ -1,10 +1,12 @@
-module Server.Context (Context (Context, state, token)) where
+module Server.Context (Context (Context, state, token, actions)) where
 
 import GHC.Conc (TVar)
+import Server.Actions (Actions)
 import Server.Token (Token)
 import ServerState (ServerState)
 
 data Context = Context
   { state :: TVar ServerState,
-    token :: Token
+    token :: Token,
+    actions :: Actions
   }

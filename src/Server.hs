@@ -20,6 +20,7 @@ import Data.Typeable (Proxy (Proxy))
 import GHC.Conc (TVar, newTVarIO)
 import Servant (Application, Capture, Handler, JSON, Post, ReqBody, Server, serve, type (:<|>) ((:<|>)), type (:>))
 import Server.Context (Context (..))
+import Server.Actions (Actions)
 import Server.Response (Response)
 import Server.Token (Token)
 import qualified Server.Token as Token
@@ -32,6 +33,7 @@ import qualified ServerState.InitialBot as InitialBot
 import ServerState.Message (Message (..))
 import ServerState.User (User (User))
 import qualified ServerState.User as User
+import Control.Concurrent (newChan)
 
 type Method a = Post '[JSON] (Response a)
 
@@ -44,20 +46,20 @@ type Api =
            :<|> "sendMessage" :> ReqBody '[JSON] SendMessage :> Method Message
        )
 
-server :: TVar ServerState -> Server Api
-server state token =
+server :: TVar ServerState -> Actions -> Server Api
+server state actions token =
   return (ping context)
     :<|> getMe context
     :<|> logOut
     :<|> close
     :<|> sendMessage context
   where
-    context = Context {state, token}
+    context = Context {state, token, actions}
 
 app :: IO Application
 app = do
   state <- newTVarIO initialState
-  return (serve (Proxy :: Proxy Api) (server state))
+  serve (Proxy :: Proxy Api) . server state <$> newChan
   where
     initialState = ServerState.initialize (user :| []) (bot :| [])
     user =

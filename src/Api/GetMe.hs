@@ -22,6 +22,7 @@ import ServerState.BotPermissions (BotPermissions)
 import ServerState.Id (Id)
 import ServerState.User (User (User))
 import qualified ServerState.User as User
+import Server.Actions (writeAction, ActionKind(GetMe))
 
 data Me = Me User BotPermissions
 
@@ -45,7 +46,8 @@ getMe' token = do
     unathorized = Error {description = "Unathorized", parameters = Nothing}
 
 getMe :: Context -> Handler (Response Me)
-getMe Context {state, token} = do
+getMe Context {state, token, actions} = do
+  writeAction token actions GetMe
   state' <- liftIO $ readTVarIO state
   let (result, _) = runState (getMe' token) state'
   return result
