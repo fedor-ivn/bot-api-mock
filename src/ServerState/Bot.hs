@@ -13,27 +13,23 @@ import ServerState.Message (Message)
 import ServerState.Update (Update (Update))
 import qualified ServerState.Update as Update
 
--- | Additional information about a bot.
-data Bot = Bot
-  { token :: Token,
-    permissions :: BotPermissions,
-    updates :: Seq Update
-  }
-
 -- | We push elements to the left end
 -- | and get element from the right end
 type Updates = Seq Update
 
-getLeft :: ViewL Update -> Id
-getLeft EmptyL = Id.Id 0
-getLeft (x :< xs) = succ $ Update.id x
-
-nextUpdateId :: Updates -> Id
-nextUpdateId upds = getLeft $ viewl upds
+-- | Additional information about a bot.
+data Bot = Bot
+  { token :: Token,
+    permissions :: BotPermissions,
+    updates :: Updates,
+    updateId :: Id
+  }
 
 addUpdate :: Maybe Bot -> Message -> Maybe Bot
 addUpdate Nothing _ = Nothing
-addUpdate (Just bot) message = Just $ bot {updates = newUpdate <| upds}
+addUpdate (Just bot) message =
+  Just $ bot {updates = newUpdate <| upds, updateId = nextUpdateId}
   where
     upds = updates bot
-    newUpdate = Update (nextUpdateId upds) message
+    nextUpdateId = succ (updateId bot)
+    newUpdate = Update nextUpdateId message

@@ -10,11 +10,11 @@ import Data.List.NonEmpty (NonEmpty)
 import qualified Data.List.NonEmpty as List.NonEmpty
 import Data.Map (Map)
 import qualified Data.Map as Map
-import Data.Maybe (fromJust, fromMaybe)
+import Data.Maybe (fromMaybe)
 import Data.Sequence (Seq)
 import qualified Data.Sequence as Seq
 import Data.Text (Text)
-import Server.Token (Token, getId)
+import Server.Token (Token)
 import qualified Server.Token as Token
 import ServerState.Bot (Bot (Bot, token), addUpdate)
 import qualified ServerState.Bot as Bot
@@ -74,7 +74,8 @@ initialize users initialBots =
           Bot
             { Bot.token = InitialBot.token initialBot,
               Bot.permissions = InitialBot.permissions initialBot,
-              Bot.updates = Seq.empty
+              Bot.updates = Seq.empty,
+              Bot.updateId = Id 0
             }
 
 -- | Return a list of users from the State.
@@ -118,22 +119,17 @@ getBots = do
 getBot :: Token -> State ServerState (Maybe User)
 getBot token = getUser (Token.getId token)
 
-getBotById :: Id -> Bots -> Maybe Bot
-getBotById = Map.lookup
-
 getBotAsBot :: Id -> State ServerState (Maybe Bot)
 getBotAsBot id = do
   ServerState {bots} <- get
-  let bot = getBotById id bots
+  let bot = Map.lookup id bots
   return bot
 
 putUpdatedBot :: Maybe Bot -> State ServerState ()
-putUpdatedBot Nothing = do
-  state <- get
-  put state
+putUpdatedBot Nothing = return ()
 putUpdatedBot (Just bot) = do
   state@ServerState {bots} <- get
-  let id = getId $ token bot
+  let id = Token.getId (token bot)
   put (state {bots = Map.insert id bot bots})
 
 -- | Send new message in private chat.
