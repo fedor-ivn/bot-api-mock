@@ -5,6 +5,7 @@ module Api (Api, api) where
 
 import Api.Close (close)
 import Api.GetMe (Me, getMe)
+import Api.GetUpdates (GetUpdates, getUpdates)
 import Api.LogOut (logOut)
 import Api.Ping (Ping, ping)
 import Api.SendMessage (SendMessage, sendMessage)
@@ -25,6 +26,8 @@ import Server.Response (Response)
 import Server.Token (Token)
 import ServerState (ServerState)
 import ServerState.Message (Message)
+import ServerState.Update (Update)
+import ServerState.User (User (User))
 
 type Method a = Post '[JSON] (Response a)
 
@@ -35,6 +38,7 @@ type Api =
            :<|> "logOut" :> Method Bool
            :<|> "close" :> Method Bool
            :<|> "sendMessage" :> ReqBody '[JSON] SendMessage :> Method Message
+           :<|> "getUpdates" :> ReqBody '[JSON] GetUpdates :> Method [Update]
        )
 
 api :: TVar ServerState -> Actions -> Server Api
@@ -44,6 +48,7 @@ api state actions token =
     :<|> logOut context
     :<|> close context
     :<|> sendMessage context
+    :<|> getUpdates context
   where
     context =
       Context

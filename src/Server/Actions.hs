@@ -6,7 +6,7 @@ import Server.Token (Token)
 import qualified Server.Token as Token
 import ServerState.Id (Id)
 
-data ActionKind = GetMe | SendMessage | LogOut | Close deriving (Eq)
+data ActionKind = GetMe | SendMessage | LogOut | Close | GetUpdates deriving (Eq)
 
 data Action = Action Id ActionKind deriving (Eq)
 
