@@ -2,13 +2,13 @@ module Server.Actions (Actions, Action (..), ActionKind (..), writeAction) where
 
 import Control.Concurrent.Chan (Chan, writeChan)
 import Control.Monad.Cont (MonadIO, liftIO)
-import qualified Server.Token as Token
 import Server.Token (Token)
+import qualified Server.Token as Token
 import ServerState.Id (Id)
 
-data ActionKind = GetMe | SendMessage | LogOut | Close
+data ActionKind = GetMe | SendMessage | LogOut | Close deriving (Eq)
 
-data Action = Action Id ActionKind
+data Action = Action Id ActionKind deriving (Eq)
 
 type Actions = Chan Action
 

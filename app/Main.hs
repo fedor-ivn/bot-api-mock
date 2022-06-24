@@ -5,7 +5,8 @@ module Main where
 import Data.List.NonEmpty (NonEmpty ((:|)))
 import Data.Maybe (fromJust)
 import Network.Wai.Handler.Warp (defaultSettings, setPort)
-import Server (Server, startServer)
+import Server (Server, startServer, waitForAction)
+import Server.Actions (ActionKind (GetMe))
 import qualified Server.Token as Token
 import qualified ServerState
 import qualified ServerState.BotPermissions as BotPermissions
@@ -15,10 +16,14 @@ import qualified ServerState.InitialBot as InitialBot
 import ServerState.User (User (User))
 import qualified ServerState.User as User
 
+botId :: Id
+botId = Id 2
+
 runTest :: Server -> IO ()
 runTest server = do
   putStrLn "The server is running..."
-  getLine
+  waitForAction botId GetMe server
+  putStrLn "The bot has called `getMe`. Yay!"
   return ()
 
 main :: IO ()
