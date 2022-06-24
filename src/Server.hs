@@ -6,7 +6,7 @@ module Server (Server, startServer) where
 import Api (Api, api)
 import Control.Concurrent (newChan)
 import Data.Typeable (Proxy (Proxy))
-import GHC.Conc (TVar, newTVarIO)
+import GHC.Conc (TVar, forkIO, newTVarIO)
 import Network.Wai.Handler.Warp (Settings, runSettings)
 import Servant (Application, serve)
 import Server.Actions (Actions)
@@ -25,10 +25,11 @@ makeApplication Server {stateVar, actions} =
 
 -- | Start a mock Bot API server with some initial state and settings for the
 -- server.
-startServer :: ServerState -> Settings -> IO ()
-startServer initialState serverSettings = do
+startServer :: ServerState -> Settings -> (Server -> IO ()) -> IO ()
+startServer initialState serverSettings runTest = do
   stateVar <- newTVarIO initialState
   actions <- newChan
   let server = Server {stateVar, actions}
   let application = makeApplication server
-  runSettings serverSettings application
+  forkIO (runSettings serverSettings application)
+  runTest server

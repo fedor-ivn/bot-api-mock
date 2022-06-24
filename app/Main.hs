@@ -5,7 +5,7 @@ module Main where
 import Data.List.NonEmpty (NonEmpty ((:|)))
 import Data.Maybe (fromJust)
 import Network.Wai.Handler.Warp (defaultSettings, setPort)
-import Server (startServer)
+import Server (Server, startServer)
 import qualified Server.Token as Token
 import qualified ServerState
 import qualified ServerState.BotPermissions as BotPermissions
@@ -15,8 +15,14 @@ import qualified ServerState.InitialBot as InitialBot
 import ServerState.User (User (User))
 import qualified ServerState.User as User
 
+runTest :: Server -> IO ()
+runTest server = do
+  putStrLn "The server is running..."
+  getLine
+  return ()
+
 main :: IO ()
-main = startServer initialState serverSettings
+main = startServer initialState serverSettings runTest
   where
     initialState = ServerState.initialize (user :| []) (bot :| [])
     user =
