@@ -25,7 +25,6 @@ library
       Api.LogOut
       Api.Ping
       Api.SendMessage
-      Lib
       Server
       Server.Actions
       Server.Context
