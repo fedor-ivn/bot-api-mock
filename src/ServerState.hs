@@ -2,7 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 
-module ServerState (ServerState, getBot, getBots, sendMessage, initialize, bots, getBotAsBot) where
+module ServerState (ServerState, getBot, getBots, sendMessage, initialize, getBotAsBot, Bots) where
 
 import Control.Monad.State (MonadState (get, put), State)
 import Data.List (find)
