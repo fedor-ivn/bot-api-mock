@@ -10,15 +10,18 @@ import qualified Data.Map as Map
 import GHC.Conc (readTVarIO)
 import GHC.Generics (Generic)
 import Servant (Handler)
-import Server.Actions (ActionKind (GetUpdates), writeAction)
+import Server.Actions (writeAction)
+import qualified Server.Actions as Actions
 import Server.Context (Context (..))
 import Server.Response (Response (Ok))
+import Server.Token (Token)
 import qualified Server.Token as Token
-import ServerState (Bots, ServerState, bots, getBots)
+import ServerState (ServerState, getBotAsBot)
 import ServerState.Bot (Bot)
 import qualified ServerState.Bot as Bot
 import ServerState.Id (Id (..))
-import ServerState.Update (Update)
+import ServerState.Update (Update (Update, id))
+import qualified ServerState.Update as Update
 
 data GetUpdates = GetUpdates
   { offset :: Id,
@@ -28,25 +31,24 @@ data GetUpdates = GetUpdates
 
 instance FromJSON GetUpdates
 
-getRange :: Id -> Integer -> [a] -> [a]
-getRange (Id offset) lim xs =
-  take
-    (fromIntegral lim)
-    (take (length xs - fromIntegral offset + 1) xs)
+getRange :: Id -> Int -> [Update] -> [Update]
+getRange firstId limit updates = take limit (dropWhile isOldUpdate updates)
+  where
+    isOldUpdate Update {Update.id} = id < firstId
 
-getUpdates' :: Id -> Integer -> Maybe Bot -> State ServerState [Update]
-getUpdates' offset lim bot = do
+getUpdates' :: Id -> Integer -> Token -> State ServerState [Update]
+getUpdates' offset lim token = do
+  bot <- ServerState.getBotAsBot (Token.getId token)
   let upds = case bot of
         Nothing -> []
         Just b -> Seq.toList (Bot.updates b)
-  return (getRange offset lim upds)
+  return (getRange offset (fromIntegral lim) upds)
 
 getUpdates :: Context -> GetUpdates -> Handler (Response [Update])
 getUpdates
   Context {state, token, actions}
-  Api.GetUpdates.GetUpdates {offset, limit} = do
-    writeAction token actions Server.Actions.GetUpdates
+  GetUpdates {offset, limit} = do
+    writeAction token actions Actions.GetUpdates
     state' <- liftIO $ readTVarIO state
-    let bot = Map.lookup (Token.getId token) (bots state')
-    let (result, _) = runState (getUpdates' offset limit bot) state'
+    let (result, _) = runState (getUpdates' offset limit token) state'
     return (Ok result)

@@ -2,7 +2,7 @@
 
 module ServerState.Bot (Bot (..), addUpdate) where
 
-import Data.Sequence (Seq (Empty), ViewL (EmptyL, (:<)), viewl, (<|))
+import Data.Sequence (Seq (Empty), ViewL (EmptyL, (:<)), viewl, (<|), (|>))
 import qualified Data.Sequence as Seq
 import Server.Token (Token)
 import ServerState.BotPermissions (BotPermissions)
@@ -25,7 +25,7 @@ data Bot = Bot
 addUpdate :: Maybe Bot -> Message -> Maybe Bot
 addUpdate Nothing _ = Nothing
 addUpdate (Just bot) message =
-  Just $ bot {updates = newUpdate <| upds, updateId = nextUpdateId}
+  Just $ bot {updates = upds |> newUpdate, updateId = nextUpdateId}
   where
     upds = updates bot
     nextUpdateId = succ (updateId bot)
