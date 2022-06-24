@@ -6,16 +6,13 @@ module Api.GetUpdates where
 import Control.Monad.State (MonadIO (liftIO), MonadState (get), State, runState)
 import Data.Aeson (FromJSON)
 import qualified Data.Foldable as Seq
-import Data.Int (Int64)
 import qualified Data.Map as Map
-import qualified Data.Sequence as Seq
 import GHC.Conc (readTVarIO)
 import GHC.Generics (Generic)
 import Servant (Handler)
 import Server.Actions (ActionKind (GetUpdates), writeAction)
 import Server.Context (Context (..))
 import Server.Response (Response (Ok))
-import Server.Token (Token, getId)
 import qualified Server.Token as Token
 import ServerState (Bots, ServerState, bots, getBots)
 import ServerState.Bot (Bot)
