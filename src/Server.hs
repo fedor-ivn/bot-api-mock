@@ -1,6 +1,7 @@
+{-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Server (startServer) where
+module Server (Server, startServer) where
 
 import Api (Api, api)
 import Control.Concurrent (newChan)
@@ -11,15 +12,23 @@ import Servant (Application, serve)
 import Server.Actions (Actions)
 import ServerState (ServerState)
 
+-- | A mock Bot API server.
+data Server = Server
+  { stateVar :: TVar ServerState,
+    actions :: Actions
+  }
+
 -- | Make an `Application` for the mock Bot API server.
-makeApplication :: TVar ServerState -> Actions -> Application
-makeApplication state actions = serve (Proxy :: Proxy Api) (api state actions)
+makeApplication :: Server -> Application
+makeApplication Server {stateVar, actions} =
+  serve (Proxy :: Proxy Api) (api stateVar actions)
 
 -- | Start a mock Bot API server with some initial state and settings for the
 -- server.
 startServer :: ServerState -> Settings -> IO ()
 startServer initialState serverSettings = do
-  state <- newTVarIO initialState
+  stateVar <- newTVarIO initialState
   actions <- newChan
-  let application = makeApplication state actions
+  let server = Server {stateVar, actions}
+  let application = makeApplication server
   runSettings serverSettings application
