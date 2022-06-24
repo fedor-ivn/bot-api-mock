@@ -4,6 +4,8 @@ module Main where
 
 import Data.List.NonEmpty (NonEmpty ((:|)))
 import Data.Maybe (fromJust)
+import Data.Text (Text)
+import qualified Data.Text as Text
 import Network.Wai.Handler.Warp (Settings, defaultSettings, setPort)
 import Server (startServer, waitForAction)
 import Server.Actions (ActionKind (GetMe))
@@ -16,6 +18,13 @@ import ServerState.InitialBot (InitialBot (InitialBot))
 import qualified ServerState.InitialBot as InitialBot
 import ServerState.User (User (User))
 import qualified ServerState.User as User
+import System.Process (CreateProcess (env), createProcess, proc)
+
+botToken :: Text
+botToken = "2:random-characters"
+
+botId :: Id
+botId = Id 2
 
 initialState :: ServerState
 initialState = ServerState.initialize (user :| []) (bot :| [])
@@ -30,23 +39,34 @@ initialState = ServerState.initialize (user :| []) (bot :| [])
         }
     bot =
       InitialBot
-        { -- SAFETY: `Token.parse` is called on a literal, so we can guarantee
+        { -- SAFETY: `Token.parse` is called on a constant, so we can guarantee
           -- that it returns `Just`. Calling `fromJust` on a `Just` is safe.
-          InitialBot.token = fromJust (Token.parse "2:random-characters"),
+          InitialBot.token = fromJust (Token.parse botToken),
           InitialBot.name = "Bot",
           InitialBot.username = "a_bot",
           InitialBot.permissions = BotPermissions.defaultPermissions
         }
 
-botId :: Id
-botId = Id 2
-
 serverSettings :: Settings
 serverSettings = setPort 8081 defaultSettings
 
+botPath :: FilePath
+botPath = "./bot/target/release/bot"
+
+botEnv :: [(String, String)]
+botEnv =
+  [ ("BOT_TOKEN", Text.unpack botToken),
+    ("BOT_API_URI", "http://localhost:8081/")
+  ]
+
+startBot :: IO ()
+startBot = do
+  _ <- createProcess ((proc botPath []) {env = Just botEnv})
+  return ()
+
 main :: IO ()
 main = startServer initialState serverSettings $ \server -> do
-  putStrLn "The server is running..."
+  startBot
   waitForAction botId GetMe server
   putStrLn "The bot has called `getMe`. Yay!"
   return ()

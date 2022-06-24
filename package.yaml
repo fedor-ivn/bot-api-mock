@@ -25,15 +25,16 @@ library:
   source-dirs: src
 
 executables:
-  bot-api-mock-exe:
-    main: Main.hs
-    source-dirs: app
+  example:
+    main: tests/Test.hs
+    source-dirs: example
     ghc-options:
       - -threaded
       - -rtsopts
       - -with-rtsopts=-N
     dependencies:
       - bot-api-mock
+      - process
 
 tests:
   bot-api-mock-test:

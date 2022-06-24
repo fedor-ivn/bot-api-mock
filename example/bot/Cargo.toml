@@ -1,0 +1,8 @@
+[package]
+name = "bot"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tbot = { git = "https://gitlab.com/SnejUgal/tbot.git" }
+tokio = { version = "1.0", features = ["macros", "rt", "rt-multi-thread"] }

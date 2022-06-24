@@ -57,12 +57,12 @@ library
     , warp
   default-language: Haskell2010
 
-executable bot-api-mock-exe
-  main-is: Main.hs
+executable example
+  main-is: tests/Test.hs
   other-modules:
       Paths_bot_api_mock
   hs-source-dirs:
-      app
+      example
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       aeson
@@ -71,6 +71,7 @@ executable bot-api-mock-exe
     , bot-api-mock
     , containers
     , mtl >2
+    , process
     , servant-server
     , text
     , time >1
