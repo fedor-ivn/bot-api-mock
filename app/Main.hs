@@ -4,10 +4,11 @@ module Main where
 
 import Data.List.NonEmpty (NonEmpty ((:|)))
 import Data.Maybe (fromJust)
-import Network.Wai.Handler.Warp (defaultSettings, setPort)
-import Server (Server, startServer, waitForAction)
+import Network.Wai.Handler.Warp (Settings, defaultSettings, setPort)
+import Server (startServer, waitForAction)
 import Server.Actions (ActionKind (GetMe))
 import qualified Server.Token as Token
+import ServerState (ServerState)
 import qualified ServerState
 import qualified ServerState.BotPermissions as BotPermissions
 import ServerState.Id (Id (Id))
@@ -16,20 +17,9 @@ import qualified ServerState.InitialBot as InitialBot
 import ServerState.User (User (User))
 import qualified ServerState.User as User
 
-botId :: Id
-botId = Id 2
-
-runTest :: Server -> IO ()
-runTest server = do
-  putStrLn "The server is running..."
-  waitForAction botId GetMe server
-  putStrLn "The bot has called `getMe`. Yay!"
-  return ()
-
-main :: IO ()
-main = startServer initialState serverSettings runTest
+initialState :: ServerState
+initialState = ServerState.initialize (user :| []) (bot :| [])
   where
-    initialState = ServerState.initialize (user :| []) (bot :| [])
     user =
       User
         { User.id = Id 1,
@@ -48,4 +38,15 @@ main = startServer initialState serverSettings runTest
           InitialBot.permissions = BotPermissions.defaultPermissions
         }
 
-    serverSettings = setPort 8081 defaultSettings
+botId :: Id
+botId = Id 2
+
+serverSettings :: Settings
+serverSettings = setPort 8081 defaultSettings
+
+main :: IO ()
+main = startServer initialState serverSettings $ \server -> do
+  putStrLn "The server is running..."
+  waitForAction botId GetMe server
+  putStrLn "The bot has called `getMe`. Yay!"
+  return ()
