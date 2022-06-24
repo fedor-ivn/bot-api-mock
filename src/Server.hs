@@ -1,14 +1,15 @@
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Server (Server, waitForAction, startServer) where
+module Server (Server, waitForAction, modifyState, startServer) where
 
 import Api (Api, api)
 import Control.Concurrent (newChan, readChan)
 import Control.Monad (unless)
+import Control.Monad.State (State, runState)
 import Data.Function ((&))
 import Data.Typeable (Proxy (Proxy))
-import GHC.Conc (TVar, forkIO, newTVarIO)
+import GHC.Conc (TVar, atomically, forkIO, newTVarIO, readTVar, writeTVar)
 import Network.Wai.Handler.Warp
   ( Settings,
     runSettings,
@@ -37,6 +38,14 @@ waitForAction expectedActor expectedKind Server {actions} = wait
       -- TODO: if we skip some action, it is lost forever. We need to store
       -- skipped actions in some kind of a list
       unless (action == expectedAction) wait
+
+-- | Modify the current server state.
+modifyState :: Server -> State ServerState a -> IO a
+modifyState Server {stateVar} f = atomically $ do
+  state <- readTVar stateVar
+  let (returnValue, newState) = runState f state
+  writeTVar stateVar newState
+  return returnValue
 
 -- | Make an `Application` for the mock Bot API server.
 makeApplication :: Server -> Application
