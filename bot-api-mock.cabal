@@ -19,6 +19,7 @@ source-repository head
 
 library
   exposed-modules:
+      Api
       Api.Close
       Api.GetMe
       Api.LogOut

@@ -1,65 +1,27 @@
-{-# LANGUAGE DataKinds #-}
-{-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE TypeOperators #-}
 
 module Server (app) where
 
-import Api.Close (close)
-import Api.GetMe (Me, getMe)
-import Api.LogOut (logOut)
-import Api.Ping (Ping, ping)
-import Api.SendMessage (SendMessage, sendMessage)
-import Control.Monad.IO.Class (liftIO)
+import Api (Api, api)
+import Control.Concurrent (newChan)
 import Data.List.NonEmpty (NonEmpty ((:|)))
-import qualified Data.List.NonEmpty as List.NonEmpty
-import Data.Map (Map)
-import qualified Data.Map as Map
 import Data.Maybe (fromJust)
 import Data.Typeable (Proxy (Proxy))
 import GHC.Conc (TVar, newTVarIO)
-import Servant (Application, Capture, Handler, JSON, Post, ReqBody, Server, serve, type (:<|>) ((:<|>)), type (:>))
-import Server.Context (Context (..))
-import Server.Actions (Actions)
-import Server.Response (Response)
-import Server.Token (Token)
+import Servant (Application, serve)
 import qualified Server.Token as Token
-import ServerState (ServerState)
 import qualified ServerState
 import qualified ServerState.BotPermissions as BotPermissions
 import ServerState.Id (Id (Id))
 import ServerState.InitialBot (InitialBot (InitialBot))
 import qualified ServerState.InitialBot as InitialBot
-import ServerState.Message (Message (..))
 import ServerState.User (User (User))
 import qualified ServerState.User as User
-import Control.Concurrent (newChan)
-
-type Method a = Post '[JSON] (Response a)
-
-type Api =
-  Capture "token" Token
-    :> ( "ping" :> Method Ping
-           :<|> "getMe" :> Method Me
-           :<|> "logOut" :> Method Bool
-           :<|> "close" :> Method Bool
-           :<|> "sendMessage" :> ReqBody '[JSON] SendMessage :> Method Message
-       )
-
-server :: TVar ServerState -> Actions -> Server Api
-server state actions token =
-  return (ping context)
-    :<|> getMe context
-    :<|> logOut context
-    :<|> close context
-    :<|> sendMessage context
-  where
-    context = Context {state, token, actions}
 
 app :: IO Application
 app = do
   state <- newTVarIO initialState
-  serve (Proxy :: Proxy Api) . server state <$> newChan
+  serve (Proxy :: Proxy Api) . api state <$> newChan
   where
     initialState = ServerState.initialize (user :| []) (bot :| [])
     user =
