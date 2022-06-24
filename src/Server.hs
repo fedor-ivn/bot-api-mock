@@ -6,11 +6,18 @@ module Server (Server, waitForAction, startServer) where
 import Api (Api, api)
 import Control.Concurrent (newChan, readChan)
 import Control.Monad (unless)
+import Data.Function ((&))
 import Data.Typeable (Proxy (Proxy))
 import GHC.Conc (TVar, forkIO, newTVarIO)
-import Network.Wai.Handler.Warp (Settings, runSettings)
+import Network.Wai.Handler.Warp
+  ( Settings,
+    runSettings,
+    setGracefulShutdownTimeout,
+    setInstallShutdownHandler,
+  )
 import Servant (Application, serve)
 import Server.Actions (Action (Action), ActionKind, Actions)
+import qualified Server.OneTimeNotifier as OneTimeNotifier
 import ServerState (ServerState)
 import ServerState.Id (Id)
 
@@ -43,6 +50,21 @@ startServer initialState serverSettings runTest = do
   stateVar <- newTVarIO initialState
   actions <- newChan
   let server = Server {stateVar, actions}
-  let application = makeApplication server
-  forkIO (runSettings serverSettings application)
+
+  testFinished <- OneTimeNotifier.new
+  serverShutDown <- OneTimeNotifier.new
+  let handleShutdown closeSocket = do
+        forkIO (OneTimeNotifier.wait testFinished >> closeSocket)
+        return ()
+  let serverSettings' =
+        serverSettings
+          & setGracefulShutdownTimeout (Just 1)
+          & setInstallShutdownHandler handleShutdown
+
+  forkIO $ do
+    runSettings serverSettings' (makeApplication server)
+    OneTimeNotifier.notify serverShutDown
   runTest server
+
+  OneTimeNotifier.notify testFinished
+  OneTimeNotifier.wait serverShutDown
