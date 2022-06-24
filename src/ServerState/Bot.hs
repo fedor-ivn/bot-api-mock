@@ -6,8 +6,8 @@ import Data.Sequence (Seq (Empty), ViewL (EmptyL, (:<)), viewl, (<|), (|>))
 import qualified Data.Sequence as Seq
 import Server.Token (Token)
 import ServerState.BotPermissions (BotPermissions)
+import ServerState.CompleteMessage (CompleteMessage)
 import ServerState.Id (Id)
-import ServerState.Message (Message)
 import ServerState.Update (Update (Update))
 
 -- | We push elements to the left end
@@ -22,7 +22,7 @@ data Bot = Bot
     updateId :: Id
   }
 
-addUpdate :: Maybe Bot -> Message -> Maybe Bot
+addUpdate :: Maybe Bot -> CompleteMessage -> Maybe Bot
 addUpdate Nothing _ = Nothing
 addUpdate (Just bot) message =
   Just $ bot {updates = upds |> newUpdate, updateId = nextUpdateId}

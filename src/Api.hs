@@ -25,6 +25,7 @@ import qualified Server.Context as Context
 import Server.Response (Response)
 import Server.Token (Token)
 import ServerState (ServerState)
+import ServerState.CompleteMessage (CompleteMessage)
 import ServerState.Message (Message)
 import ServerState.Update (Update)
 import ServerState.User (User (User))
@@ -37,7 +38,7 @@ type Api =
            :<|> "getMe" :> Method Me
            :<|> "logOut" :> Method Bool
            :<|> "close" :> Method Bool
-           :<|> "sendMessage" :> ReqBody '[JSON] SendMessage :> Method Message
+           :<|> "sendMessage" :> ReqBody '[JSON] SendMessage :> Method CompleteMessage
            :<|> "getUpdates" :> ReqBody '[JSON] GetUpdates :> Method [Update]
        )
 

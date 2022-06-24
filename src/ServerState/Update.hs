@@ -4,12 +4,14 @@ module ServerState.Update (Update (..)) where
 
 import Data.Aeson (ToJSON)
 import GHC.Generics (Generic)
+import ServerState.CompleteMessage (CompleteMessage)
 import ServerState.Id (Id)
-import ServerState.Message (Message)
 
 data Update = Update
   { id :: Id,
-    message :: Message
+    -- TODO: should contain not a CompleteMessage but IDs to account for
+    -- possible edits of user information
+    message :: CompleteMessage
   }
   deriving (Generic)
 

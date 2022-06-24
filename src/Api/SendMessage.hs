@@ -18,14 +18,15 @@ import Data.Time.Clock (getCurrentTime)
 import GHC.Conc (atomically, readTVar, writeTVar)
 import GHC.Generics (Generic)
 import Servant (Handler)
-import qualified Server.Actions as Actions
 import Server.Actions (writeAction)
+import qualified Server.Actions as Actions
 import Server.Context (Context (..))
 import Server.Response (Response (Ok))
 import Server.Token (Token)
 import qualified Server.Token as Token
 import ServerState (ServerState)
 import qualified ServerState
+import ServerState.CompleteMessage (CompleteMessage)
 import ServerState.Id (Id (Id))
 import ServerState.Message (Message)
 import ServerState.Time (Time (Time))
@@ -45,7 +46,7 @@ instance FromJSON SendMessage where
             omitNothingFields = True
           }
 
-sendMessage :: Context -> SendMessage -> Handler (Response Message)
+sendMessage :: Context -> SendMessage -> Handler (Response CompleteMessage)
 sendMessage Context {state, token, actions} SendMessage {chatId, text} = do
   date <- Time <$> liftIO getCurrentTime
   writeAction token actions Actions.SendMessage

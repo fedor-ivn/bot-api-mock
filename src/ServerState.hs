@@ -10,7 +10,7 @@ import Data.List.NonEmpty (NonEmpty)
 import qualified Data.List.NonEmpty as List.NonEmpty
 import Data.Map (Map)
 import qualified Data.Map as Map
-import Data.Maybe (fromMaybe)
+import Data.Maybe (fromJust, fromMaybe)
 import Data.Sequence (Seq)
 import qualified Data.Sequence as Seq
 import Data.Text (Text)
@@ -19,6 +19,9 @@ import qualified Server.Token as Token
 import ServerState.Bot (Bot (Bot, token), addUpdate)
 import qualified ServerState.Bot as Bot
 import ServerState.BotPermissions (BotPermissions)
+import qualified ServerState.Chat as Chat
+import ServerState.CompleteMessage (CompleteMessage (CompleteMessage))
+import qualified ServerState.CompleteMessage as CompleteMessage
 import ServerState.Id (Id (Id))
 import ServerState.InitialBot (InitialBot (InitialBot))
 import qualified ServerState.InitialBot as InitialBot
@@ -133,17 +136,28 @@ putUpdatedBot (Just bot) = do
   put (state {bots = Map.insert id bot bots})
 
 -- | Send new message in private chat.
-sendMessage :: Id -> Id -> Time -> Text -> State ServerState Message
+sendMessage :: Id -> Id -> Time -> Text -> State ServerState CompleteMessage
 sendMessage from to date text = do
+  fromUser <- getUser from
+  toUser <- getUser to
+
   let chatId = PrivateChat.makeId from to
 
   chat <- getPrivateChat chatId
   let chat' = fromMaybe PrivateChat.empty chat
   let (message, updatedChat) = PrivateChat.addMessage chat' from date text
+  let completeMessage =
+        CompleteMessage
+          { CompleteMessage.message = message,
+            -- TODO: replace `Id`s in the arguments with `User` and `Chat` to
+            -- verify that the sender and the chat really exist
+            CompleteMessage.from = fromJust fromUser,
+            CompleteMessage.chat = Chat.PrivateChat (fromJust toUser)
+          }
 
   bot <- getBotAsBot to
-  let bot' = addUpdate bot message
+  let bot' = addUpdate bot completeMessage
 
   putUpdatedBot bot'
   putPrivateChat chatId updatedChat
-  return message
+  return completeMessage
