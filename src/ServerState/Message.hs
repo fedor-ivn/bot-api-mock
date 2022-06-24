@@ -1,5 +1,3 @@
-{-# LANGUAGE DeriveGeneric #-}
-
 module ServerState.Message (Message (..)) where
 
 import Data.Aeson (ToJSON)
@@ -14,6 +12,3 @@ data Message = Message
     text :: Text,
     date :: Time
   }
-  deriving (Generic)
-
-instance ToJSON Message
