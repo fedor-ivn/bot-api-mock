@@ -41,7 +41,7 @@ getMe' token = do
   bots <- ServerState.getBots
   case bot of
     Nothing -> return unathorized
-    Just bot -> return (Ok (createMe bots bot))
+    Just bot' -> return (Ok (createMe bots bot'))
   where
     unathorized = Error {description = "Unathorized", parameters = Nothing}
 
