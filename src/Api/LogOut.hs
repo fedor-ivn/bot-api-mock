@@ -8,6 +8,6 @@ import Server.Context (Context (..))
 import Server.Response (Response (Ok))
 
 logOut :: Context -> Handler (Response Bool)
-logOut Context {state, token, actions} = do
+logOut Context {token, actions} = do
   writeAction token actions LogOut
   return (Ok True)
