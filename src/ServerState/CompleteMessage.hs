@@ -18,12 +18,12 @@ data CompleteMessage = CompleteMessage
 instance ToJSON CompleteMessage where
   toJSON
     CompleteMessage
-      { message = Message {Message.id, Message.date, Message.text},
+      { message = Message {Message.messageId, Message.date, Message.text},
         chat,
         from
       } =
       object
-        [ "message_id" .= id,
+        [ "message_id" .= messageId,
           "from" .= from,
           "date" .= date,
           "chat" .= chat,

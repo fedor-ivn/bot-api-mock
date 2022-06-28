@@ -56,7 +56,7 @@ initialize users initialBots =
     botUsers = map makeBotUser initialBots'
     makeBotUser bot =
       User
-        { User.id = Token.getId (InitialBot.token bot),
+        { User.userId = Token.getId (InitialBot.token bot),
           User.firstName = InitialBot.name bot,
           User.lastName = Nothing,
           User.username = Just (InitialBot.username bot),
@@ -64,9 +64,9 @@ initialize users initialBots =
         }
 
     bots = Map.fromList (map makeBotsEntry initialBots')
-    makeBotsEntry initialBot = (id, bot)
+    makeBotsEntry initialBot = (botId, bot)
       where
-        id = Token.getId (InitialBot.token initialBot)
+        botId = Token.getId (InitialBot.token initialBot)
         bot =
           Bot
             { Bot.token = InitialBot.token initialBot,
@@ -83,9 +83,9 @@ getUsers = do
 
 -- | Return a user by Id from the State.
 getUser :: Id -> State ServerState (Maybe User)
-getUser id = do
+getUser userId = do
   users <- getUsers
-  let user = Data.List.find (\x -> User.id x == id) users
+  let user = Data.List.find (\x -> User.userId x == userId) users
   return user
 
 -- | Return a list of private chats from the State.
@@ -117,17 +117,17 @@ getBot :: Token -> State ServerState (Maybe User)
 getBot token = getUser (Token.getId token)
 
 getBotAsBot :: Id -> State ServerState (Maybe Bot)
-getBotAsBot id = do
+getBotAsBot botId = do
   ServerState {bots} <- get
-  let bot = Map.lookup id bots
+  let bot = Map.lookup botId bots
   return bot
 
 putUpdatedBot :: Maybe Bot -> State ServerState ()
 putUpdatedBot Nothing = return ()
 putUpdatedBot (Just bot) = do
   state@ServerState {bots} <- get
-  let id = Token.getId (token bot)
-  put (state {bots = Map.insert id bot bots})
+  let botId = Token.getId (token bot)
+  put (state {bots = Map.insert botId bot bots})
 
 -- | Send new message in private chat.
 sendMessage :: Id -> Id -> Time -> Text -> State ServerState CompleteMessage

@@ -5,7 +5,7 @@ import ServerState.Id (Id)
 import ServerState.Time (Time)
 
 data Message = Message
-  { id :: Id,
+  { messageId :: Id,
     from :: Id,
     text :: Text,
     date :: Time

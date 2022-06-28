@@ -31,7 +31,7 @@ initialState = ServerState.initialize (user :| []) (bot :| [])
   where
     user =
       User
-        { User.id = Id 1,
+        { User.userId = Id 1,
           User.firstName = "User",
           User.lastName = Nothing,
           User.username = Nothing,

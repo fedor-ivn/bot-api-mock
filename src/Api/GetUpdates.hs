@@ -32,7 +32,7 @@ instance FromJSON GetUpdates
 getRange :: Id -> Int -> [Update] -> [Update]
 getRange firstId limit updates = take limit (dropWhile isOldUpdate updates)
   where
-    isOldUpdate Update {Update.id} = id < firstId
+    isOldUpdate Update {Update.updateId} = updateId < firstId
 
 getUpdates' :: Id -> Integer -> Token -> State ServerState [Update]
 getUpdates' offset lim token = do

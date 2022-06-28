@@ -34,17 +34,16 @@ makeId from to
 nextMessageId :: PrivateChat -> Id
 nextMessageId (PrivateChat messages) = Id (lastId + 1)
   where
-    (Id lastId) = maybe (Id 0) Message.id (listToMaybe messages)
+    (Id lastId) = maybe (Id 0) Message.messageId (listToMaybe messages)
 
 -- | Add new message to a private chat.
 addMessage :: PrivateChat -> Id -> Time -> Text -> (Message, PrivateChat)
 addMessage chat@(PrivateChat messages) from date text =
   (message, PrivateChat (message : messages))
   where
-    nextId = nextMessageId chat
     message =
       Message
-        { Message.id = nextId,
+        { Message.messageId = nextMessageId chat,
           Message.from = from,
           Message.text = text,
           Message.date = date

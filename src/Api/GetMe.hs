@@ -30,10 +30,10 @@ instance ToJSON Me where
   toJSON (Me bot permissions) = mergeTo (toJSON bot) (toJSON permissions)
 
 createMe :: Map Id Bot -> User -> Me
-createMe bots user@User {User.id} = Me user permissions
+createMe bots user@User {User.userId} = Me user permissions
   where
     -- todo: get rid of `fromJust`
-    Bot {Bot.permissions} = fromJust (Map.lookup id bots)
+    Bot {Bot.permissions} = fromJust (Map.lookup userId bots)
 
 getMe' :: Token -> State ServerState (Response Me)
 getMe' token = do

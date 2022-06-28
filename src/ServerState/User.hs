@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE LambdaCase #-}
 
 module ServerState.User (User (..)) where
 
@@ -14,7 +15,7 @@ import GHC.Generics (Generic)
 import ServerState.Id (Id)
 
 data User = User
-  { id :: Id,
+  { userId :: Id,
     username :: Maybe Text,
     firstName :: Text,
     lastName :: Maybe Text,
@@ -27,6 +28,8 @@ instance ToJSON User where
     where
       options =
         defaultOptions
-          { fieldLabelModifier = camelTo2 '_',
+          { fieldLabelModifier = \case
+              "userId" -> "id"
+              other -> camelTo2 '_' other,
             omitNothingFields = True
           }

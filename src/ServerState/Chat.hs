@@ -15,7 +15,7 @@ instance ToJSON Chat where
   toJSON
     ( PrivateChat
         User
-          { User.id,
+          { User.userId,
             User.firstName,
             User.lastName,
             User.username
@@ -23,7 +23,7 @@ instance ToJSON Chat where
       ) =
       object
         ( [ "type" .= ("private" :: Text),
-            "id" .= id,
+            "id" .= userId,
             "first_name" .= firstName
           ]
             ++ optional "last_name" lastName

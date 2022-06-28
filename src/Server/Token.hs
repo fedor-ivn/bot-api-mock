@@ -28,12 +28,12 @@ instance FromHttpApiData Token where
 parse :: Text -> Maybe Token
 parse unparsedToken = do
   [unparsedId, hash] <- return (Text.split (== ':') unparsedToken)
-  id <- readMaybe (Text.unpack unparsedId)
-  return (Token (Id id) hash)
+  botId <- readMaybe (Text.unpack unparsedId)
+  return (Token (Id botId) hash)
 
 -- | Extract the bot's ID from its token.
 --
 -- >>> fmap getId (parseToken "123456:9ff811aad7a5532679bc908fc1429f3d360")
 -- Just (Id 123456)
 getId :: Token -> Id
-getId (Token id _) = id
+getId (Token botId _) = botId
