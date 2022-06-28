@@ -63,14 +63,14 @@ startServer initialState serverSettings runTest = do
   testFinished <- OneTimeNotifier.new
   serverShutDown <- OneTimeNotifier.new
   let handleShutdown closeSocket = do
-        forkIO (OneTimeNotifier.wait testFinished >> closeSocket)
+        _ <- forkIO (OneTimeNotifier.wait testFinished >> closeSocket)
         return ()
   let serverSettings' =
         serverSettings
           & setGracefulShutdownTimeout (Just 1)
           & setInstallShutdownHandler handleShutdown
 
-  forkIO $ do
+  _ <- forkIO $ do
     runSettings serverSettings' (makeApplication server)
     OneTimeNotifier.notify serverShutDown
   runTest server
