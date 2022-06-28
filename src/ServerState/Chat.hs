@@ -4,7 +4,6 @@
 module ServerState.Chat (Chat (..)) where
 
 import Data.Aeson (ToJSON (toJSON), object, (.=))
-import Data.Aeson.Types (Pair)
 import Data.Text (Text)
 import ServerState.User (User (User))
 import qualified ServerState.User as User

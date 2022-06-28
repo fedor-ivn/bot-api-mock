@@ -9,8 +9,9 @@ import Data.Aeson.Flatten (mergeTo)
 import Data.Map (Map)
 import qualified Data.Map as Map
 import Data.Maybe (fromJust)
-import GHC.Conc (TVar (TVar), readTVarIO)
+import GHC.Conc (readTVarIO)
 import Servant (Handler)
+import Server.Actions (ActionKind (GetMe), writeAction)
 import Server.Context (Context (..))
 import Server.Response (Response (..))
 import Server.Token (Token)
@@ -22,7 +23,6 @@ import ServerState.BotPermissions (BotPermissions)
 import ServerState.Id (Id)
 import ServerState.User (User (User))
 import qualified ServerState.User as User
-import Server.Actions (writeAction, ActionKind(GetMe))
 
 data Me = Me User BotPermissions
 

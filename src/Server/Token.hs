@@ -2,10 +2,9 @@
 
 module Server.Token (Token, parse, getId) where
 
-import Data.Maybe (listToMaybe)
 import Data.Text (Text)
 import qualified Data.Text as Text
-import Servant (FromHttpApiData (parseQueryParam, parseUrlPiece))
+import Servant (FromHttpApiData (parseUrlPiece))
 import ServerState.Id (Id (Id))
 import Text.Read (readMaybe)
 

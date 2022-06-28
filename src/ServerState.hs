@@ -6,31 +6,25 @@ module ServerState (ServerState, getBot, getBots, sendMessage, initialize, getBo
 
 import Control.Monad.State (MonadState (get, put), State)
 import Data.List (find)
-import Data.List.NonEmpty (NonEmpty)
 import qualified Data.List.NonEmpty as List.NonEmpty
 import Data.Map (Map)
 import qualified Data.Map as Map
 import Data.Maybe (fromJust, fromMaybe)
-import Data.Sequence (Seq)
 import qualified Data.Sequence as Seq
 import Data.Text (Text)
 import Server.Token (Token)
 import qualified Server.Token as Token
 import ServerState.Bot (Bot (Bot, token), addUpdate)
 import qualified ServerState.Bot as Bot
-import ServerState.BotPermissions (BotPermissions)
 import qualified ServerState.Chat as Chat
 import ServerState.CompleteMessage (CompleteMessage (CompleteMessage))
 import qualified ServerState.CompleteMessage as CompleteMessage
 import ServerState.Id (Id (Id))
-import ServerState.InitialBot (InitialBot (InitialBot))
+import ServerState.InitialBot (InitialBot)
 import qualified ServerState.InitialBot as InitialBot
-import ServerState.Message (Message (Message))
-import qualified ServerState.Message as Message
-import ServerState.PrivateChat (PrivateChat (PrivateChat), makeId)
+import ServerState.PrivateChat (PrivateChat)
 import qualified ServerState.PrivateChat as PrivateChat
 import ServerState.Time (Time)
-import ServerState.Update (Update)
 import ServerState.User (User (User))
 import qualified ServerState.User as User
 
@@ -50,7 +44,7 @@ data ServerState = ServerState
 -- | Initialize a `ServerState` with at least one user and one bot.
 initialize ::
   List.NonEmpty.NonEmpty User ->
-  List.NonEmpty.NonEmpty InitialBot ->
+  List.NonEmpty.NonEmpty ServerState.InitialBot.InitialBot ->
   ServerState
 initialize users initialBots =
   ServerState {users = allUsers, privateChats = Map.empty, bots}

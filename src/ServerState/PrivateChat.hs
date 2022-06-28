@@ -7,8 +7,6 @@ module ServerState.PrivateChat
   )
 where
 
-import Data.Map (Map)
-import qualified Data.Map as Map
 import Data.Maybe (listToMaybe)
 import Data.Text (Text)
 import ServerState.Id (Id (Id))

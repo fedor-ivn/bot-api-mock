@@ -26,9 +26,7 @@ import Server.Response (Response)
 import Server.Token (Token)
 import ServerState (ServerState)
 import ServerState.CompleteMessage (CompleteMessage)
-import ServerState.Message (Message)
 import ServerState.Update (Update)
-import ServerState.User (User (User))
 
 type Method a = Post '[JSON] (Response a)
 

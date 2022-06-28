@@ -3,10 +3,9 @@
 
 module Api.GetUpdates where
 
-import Control.Monad.State (MonadIO (liftIO), MonadState (get), State, runState)
+import Control.Monad.State (MonadIO (liftIO), State, runState)
 import Data.Aeson (FromJSON)
 import qualified Data.Foldable as Seq
-import qualified Data.Map as Map
 import GHC.Conc (readTVarIO)
 import GHC.Generics (Generic)
 import Servant (Handler)
@@ -17,10 +16,9 @@ import Server.Response (Response (Ok))
 import Server.Token (Token)
 import qualified Server.Token as Token
 import ServerState (ServerState, getBotAsBot)
-import ServerState.Bot (Bot)
 import qualified ServerState.Bot as Bot
 import ServerState.Id (Id (..))
-import ServerState.Update (Update (Update, id))
+import ServerState.Update (Update (Update))
 import qualified ServerState.Update as Update
 
 data GetUpdates = GetUpdates

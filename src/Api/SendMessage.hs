@@ -12,7 +12,6 @@ import Data.Aeson
     defaultOptions,
     genericParseJSON,
   )
-import Data.Maybe (fromMaybe)
 import Data.Text (Text)
 import Data.Time.Clock (getCurrentTime)
 import GHC.Conc (atomically, readTVar, writeTVar)
@@ -22,13 +21,10 @@ import Server.Actions (writeAction)
 import qualified Server.Actions as Actions
 import Server.Context (Context (..))
 import Server.Response (Response (Ok))
-import Server.Token (Token)
 import qualified Server.Token as Token
-import ServerState (ServerState)
 import qualified ServerState
 import ServerState.CompleteMessage (CompleteMessage)
-import ServerState.Id (Id (Id))
-import ServerState.Message (Message)
+import ServerState.Id (Id)
 import ServerState.Time (Time (Time))
 
 data SendMessage = SendMessage

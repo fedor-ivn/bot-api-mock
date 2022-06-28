@@ -2,8 +2,7 @@
 
 module ServerState.Bot (Bot (..), addUpdate) where
 
-import Data.Sequence (Seq (Empty), ViewL (EmptyL, (:<)), viewl, (<|), (|>))
-import qualified Data.Sequence as Seq
+import Data.Sequence (Seq, (|>))
 import Server.Token (Token)
 import ServerState.BotPermissions (BotPermissions)
 import ServerState.CompleteMessage (CompleteMessage)
