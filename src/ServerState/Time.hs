@@ -1,7 +1,7 @@
 module ServerState.Time where
 
 import Data.Aeson (ToJSON (toJSON))
-import Data.Time.Clock (UTCTime (utctDayTime), nominalDiffTimeToSeconds)
+import Data.Time.Clock (UTCTime, nominalDiffTimeToSeconds)
 import Data.Time.Clock.POSIX (utcTimeToPOSIXSeconds)
 
 newtype Time = Time UTCTime
