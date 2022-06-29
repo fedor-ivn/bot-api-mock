@@ -15,6 +15,7 @@ import Server.Actions (ActionKind (GetMe), writeAction)
 import Server.Context (Context (..))
 import Server.Response (Response (..))
 import Server.Token (Token)
+import qualified Server.Token as Token
 import ServerState (ServerState)
 import qualified ServerState
 import ServerState.Bot (Bot (Bot))
@@ -37,7 +38,7 @@ createMe bots user@User {User.userId} = Me user permissions
 
 getMe' :: Token -> State ServerState (Response Me)
 getMe' token = do
-  bot <- ServerState.getBot token
+  bot <- ServerState.getUser (Token.getId token)
   bots <- ServerState.getBots
   case bot of
     Nothing -> return unathorized

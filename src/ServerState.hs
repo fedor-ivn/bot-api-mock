@@ -2,7 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 
-module ServerState (ServerState, getBot, getBots, sendMessage, initialize, getBotAsBot, Bots) where
+module ServerState (ServerState, getUser, getBots, sendMessage, initialize, getBot, Bots) where
 
 import Control.Monad.State (MonadState (get, put), State)
 import Data.List (find)
@@ -12,7 +12,6 @@ import qualified Data.Map as Map
 import Data.Maybe (fromJust, fromMaybe)
 import qualified Data.Sequence as Seq
 import Data.Text (Text)
-import Server.Token (Token)
 import qualified Server.Token as Token
 import ServerState.Bot (Bot (Bot, token), addUpdate)
 import qualified ServerState.Bot as Bot
@@ -110,13 +109,10 @@ getBots = do
   ServerState {bots} <- get
   return bots
 
--- | Return a bot as a User by its token from the State.
-getBot :: Token -> State ServerState (Maybe User)
-getBot token = getUser (Token.getId token)
-
-getBotAsBot :: Id -> State ServerState (Maybe Bot)
-getBotAsBot botId = do
-  ServerState {bots} <- get
+-- | Get information about a bot given its ID.
+getBot :: Id -> State ServerState (Maybe Bot)
+getBot botId = do
+  bots <- getBots
   let bot = Map.lookup botId bots
   return bot
 
@@ -147,9 +143,9 @@ sendMessage from to date text = do
             CompleteMessage.chat = Chat.PrivateChat (fromJust toUser)
           }
 
-  bot <- getBotAsBot to
-  let bot' = addUpdate bot completeMessage
+  bot <- getBot to
+  let updatedBot = addUpdate bot completeMessage
 
-  putUpdatedBot bot'
+  putUpdatedBot updatedBot
   putPrivateChat chatId updatedChat
   return completeMessage

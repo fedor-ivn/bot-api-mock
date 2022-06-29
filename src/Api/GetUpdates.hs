@@ -15,7 +15,7 @@ import Server.Context (Context (..))
 import Server.Response (Response (Ok))
 import Server.Token (Token)
 import qualified Server.Token as Token
-import ServerState (ServerState, getBotAsBot)
+import ServerState (ServerState, getBot)
 import qualified ServerState.Bot as Bot
 import ServerState.Id (Id (..))
 import ServerState.Update (Update (Update))
@@ -36,7 +36,7 @@ getRange firstId limit updates = take limit (dropWhile isOldUpdate updates)
 
 getUpdates' :: Id -> Integer -> Token -> State ServerState [Update]
 getUpdates' offset lim token = do
-  bot <- ServerState.getBotAsBot (Token.getId token)
+  bot <- ServerState.getBot (Token.getId token)
   let upds = case bot of
         Nothing -> []
         Just b -> Seq.toList (Bot.updates b)
