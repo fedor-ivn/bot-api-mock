@@ -1,0 +1,8 @@
+{
+    // This is configuration required for VS Code to format files using
+    // `brittany` and with the tab size specified in `brittany`'s config file.
+    "haskell.formattingProvider": "brittany",
+    "[haskell]": {
+        "editor.tabSize": 4,
+    }
+}
