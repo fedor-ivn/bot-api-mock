@@ -4,19 +4,20 @@ module Server.Token (Token, parse, getId) where
 
 import Data.Text (Text)
 import qualified Data.Text as Text
-import Servant (FromHttpApiData (parseUrlPiece))
-import ServerState.Id (Id (Id))
 import Text.Read (readMaybe)
 
+import Servant (FromHttpApiData(parseUrlPiece))
+import ServerState.Id (Id(Id))
+
 -- | A bot's token.
-data Token = Token Id Text deriving (Eq)
+data Token = Token Id Text
+    deriving Eq
 
 instance FromHttpApiData Token where
-  parseUrlPiece piece = case parsedToken of
-    Nothing -> Left "Failed to parse bot token"
-    Just token -> Right token
-    where
-      parsedToken = Text.stripPrefix "bot" piece >>= parse
+    parseUrlPiece piece = case parsedToken of
+        Nothing -> Left "Failed to parse bot token"
+        Just token -> Right token
+        where parsedToken = Text.stripPrefix "bot" piece >>= parse
 
 -- | Parses a token.
 --
@@ -27,9 +28,9 @@ instance FromHttpApiData Token where
 -- False
 parse :: Text -> Maybe Token
 parse unparsedToken = do
-  [unparsedId, hash] <- return (Text.split (== ':') unparsedToken)
-  botId <- readMaybe (Text.unpack unparsedId)
-  return (Token (Id botId) hash)
+    [unparsedId, hash] <- return (Text.split (== ':') unparsedToken)
+    botId <- readMaybe (Text.unpack unparsedId)
+    return (Token (Id botId) hash)
 
 -- | Extract the bot's ID from its token.
 --

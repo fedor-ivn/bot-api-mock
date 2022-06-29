@@ -3,24 +3,19 @@
 
 module Api (Api, api) where
 
+import GHC.Conc (TVar)
+import Servant
+    (type (:<|>)((:<|>)), type (:>), Capture, JSON, Post, ReqBody, Server)
+
 import Api.Close (close)
 import Api.GetMe (Me, getMe)
 import Api.GetUpdates (GetUpdates, getUpdates)
 import Api.LogOut (logOut)
 import Api.Ping (Ping, ping)
 import Api.SendMessage (SendMessage, sendMessage)
-import GHC.Conc (TVar)
-import Servant
-  ( Capture,
-    JSON,
-    Post,
-    ReqBody,
-    Server,
-    type (:<|>) ((:<|>)),
-    type (:>),
-  )
+
 import Server.Actions (Actions)
-import Server.Context (Context (Context))
+import Server.Context (Context(Context))
 import qualified Server.Context as Context
 import Server.Response (Response)
 import Server.Token (Token)
@@ -31,27 +26,35 @@ import ServerState.Update (Update)
 type Method a = Post '[JSON] (Response a)
 
 type Api =
-  Capture "token" Token
-    :> ( "ping" :> Method Ping
-           :<|> "getMe" :> Method Me
-           :<|> "logOut" :> Method Bool
-           :<|> "close" :> Method Bool
-           :<|> "sendMessage" :> ReqBody '[JSON] SendMessage :> Method CompleteMessage
-           :<|> "getUpdates" :> ReqBody '[JSON] GetUpdates :> Method [Update]
-       )
+    Capture "token" Token
+        :> (
+            "ping" :> Method Ping
+            :<|> "getMe" :> Method Me
+            :<|> "logOut" :> Method Bool
+            :<|> "close" :> Method Bool
+            :<|> (
+                "sendMessage"
+                    :> ReqBody '[JSON] SendMessage
+                    :> Method CompleteMessage
+            )
+            :<|> (
+                "getUpdates"
+                    :> ReqBody '[JSON] GetUpdates
+                    :> Method [Update]
+            )
+        )
 
 api :: TVar ServerState -> Actions -> Server Api
 api state actions token =
-  return (ping context)
-    :<|> getMe context
-    :<|> logOut context
-    :<|> close context
-    :<|> sendMessage context
-    :<|> getUpdates context
+    return (ping context)
+        :<|> getMe context
+        :<|> logOut context
+        :<|> close context
+        :<|> sendMessage context
+        :<|> getUpdates context
   where
-    context =
-      Context
-        { Context.state = state,
-          Context.token = token,
-          Context.actions = actions
+    context = Context
+        { Context.state = state
+        , Context.token = token
+        , Context.actions = actions
         }

@@ -1,14 +1,16 @@
-module ServerState.InitialBot (InitialBot (..)) where
+module ServerState.InitialBot (InitialBot(..)) where
 
 import Data.Text (Text)
+
 import Server.Token (Token)
+
 import ServerState.BotPermissions (BotPermissions)
 
 -- | Information about a bot. This datatype is used to initialize `ServerState`.
 data InitialBot = InitialBot
-  { token :: Token,
-    name :: Text,
-    username :: Text,
-    permissions :: BotPermissions
-  }
-  deriving (Eq)
+    { token :: Token
+    , name :: Text
+    , username :: Text
+    , permissions :: BotPermissions
+    }
+    deriving Eq
