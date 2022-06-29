@@ -96,9 +96,7 @@ getPrivateChats = do
 
 -- | Return private chat by Id from the State.
 getPrivateChat :: (Id, Id) -> State ServerState (Maybe PrivateChat)
-getPrivateChat chatId = do
-  privateChats <- getPrivateChats
-  return (Map.lookup chatId privateChats)
+getPrivateChat chatId = Map.lookup chatId <$> getPrivateChats
 
 -- | Add new private chat to the State.
 putPrivateChat :: (Id, Id) -> PrivateChat -> State ServerState ()
