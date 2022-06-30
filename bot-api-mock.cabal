@@ -20,6 +20,7 @@ source-repository head
 library
   exposed-modules:
       Api
+      Api.BotAuth
       Api.Close
       Api.GetMe
       Api.GetUpdates
@@ -54,10 +55,13 @@ library
     , aeson-flatten
     , base >=4.7 && <5
     , containers
+    , jose
     , mtl >2
+    , servant-auth-server
     , servant-server
     , text
     , time >1
+    , wai
     , warp
   default-language: Haskell2010
 
@@ -74,11 +78,14 @@ executable example
     , base >=4.7 && <5
     , bot-api-mock
     , containers
+    , jose
     , mtl >2
     , process
+    , servant-auth-server
     , servant-server
     , text
     , time >1
+    , wai
     , warp
   default-language: Haskell2010
 
@@ -96,9 +103,12 @@ test-suite bot-api-mock-test
     , base >=4.7 && <5
     , bot-api-mock
     , containers
+    , jose
     , mtl >2
+    , servant-auth-server
     , servant-server
     , text
     , time >1
+    , wai
     , warp
   default-language: Haskell2010

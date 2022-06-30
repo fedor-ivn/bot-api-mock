@@ -14,8 +14,11 @@ dependencies:
   - aeson
   - aeson-flatten
   - base >= 4.7 && < 5
+  - jose
+  - servant-auth-server
   - servant-server
   - text
+  - wai
   - warp
   - containers
   - mtl > 2

@@ -1,11 +1,26 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE TypeFamilies #-}
 
 module Api (Api, api) where
 
 import GHC.Conc (TVar)
 import Servant
-    (type (:<|>)((:<|>)), type (:>), Capture, JSON, Post, ReqBody, Server)
+    ( type (:<|>)((:<|>))
+    , type (:>)
+    , Capture
+    , JSON
+    , Post
+    , ReqBody
+    , Server
+    , err401
+    )
+import Servant.Auth.Server
+    ( Auth
+    , AuthResult(Authenticated)
+    , ThrowAll(throwAll)
+    )
 
 import Api.Close (close)
 import Api.GetMe (Me, getMe)
@@ -20,13 +35,16 @@ import qualified Server.Context as Context
 import Server.Response (Response)
 import Server.Token (Token)
 import ServerState (ServerState)
+import ServerState.Bot (Bot)
 import ServerState.CompleteMessage (CompleteMessage)
 import ServerState.Update (Update)
+import Api.BotAuth (BotAuth)
 
 type Method a = Post '[JSON] (Response a)
 
 type Api =
-    Capture "token" Token
+    Auth '[BotAuth] Bot
+        :> Capture "token" Token
         :> (
             "ping" :> Method Ping
             :<|> "getMe" :> Method Me
@@ -45,7 +63,7 @@ type Api =
         )
 
 api :: TVar ServerState -> Actions -> Server Api
-api state actions token =
+api state actions (Authenticated _bot) token =
     return (ping context)
         :<|> getMe context
         :<|> logOut context
@@ -58,3 +76,4 @@ api state actions token =
         , Context.token = token
         , Context.actions = actions
         }
+api _ _ _ _ = throwAll err401

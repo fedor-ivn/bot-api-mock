@@ -6,6 +6,7 @@ module Server (Server, waitForAction, modifyState, startServer) where
 import Control.Concurrent (newChan, readChan)
 import Control.Monad (unless)
 import Control.Monad.State (State, runState)
+import Crypto.JOSE (JWK)
 import Data.Function ((&))
 import Data.Typeable (Proxy(Proxy))
 import GHC.Conc (TVar, atomically, forkIO, newTVarIO, readTVar, writeTVar)
@@ -15,9 +16,13 @@ import Network.Wai.Handler.Warp
     , setGracefulShutdownTimeout
     , setInstallShutdownHandler
     )
-import Servant (Application, serve)
+import Servant (Application, Context((:.), EmptyContext))
+import Servant.Auth.Server
+    (defaultCookieSettings, defaultJWTSettings, generateKey)
+import Servant.Server (serveWithContext)
 
 import Api (Api, api)
+import qualified Api.BotAuth as BotAuth
 
 import Server.Actions (Action(Action), ActionKind, Actions)
 import qualified Server.OneTimeNotifier as OneTimeNotifier
@@ -51,9 +56,17 @@ modifyState Server { stateVar } f = atomically $ do
     return returnValue
 
 -- | Make an `Application` for the mock Bot API server.
-makeApplication :: Server -> Application
-makeApplication Server { stateVar, actions } =
-    serve (Proxy :: Proxy Api) (api stateVar actions)
+makeApplication :: JWK -> Server -> Application
+makeApplication key Server { stateVar, actions } = serveWithContext
+    (Proxy :: Proxy Api)
+    context
+    (api stateVar actions)
+  where
+    context =
+        defaultCookieSettings
+            :. defaultJWTSettings key
+            :. BotAuth.Config stateVar
+            :. EmptyContext
 
 -- | Start a mock Bot API server with some initial state and settings for the
 -- server.
@@ -75,8 +88,9 @@ startServer initialState serverSettings runTest = do
                 & setGracefulShutdownTimeout (Just 1)
                 & setInstallShutdownHandler handleShutdown
 
+    key <- generateKey
     _ <- forkIO $ do
-        runSettings serverSettings' (makeApplication server)
+        runSettings serverSettings' (makeApplication key server)
         OneTimeNotifier.notify serverShutDown
     runTest server
 
