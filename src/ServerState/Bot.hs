@@ -6,8 +6,6 @@ import Data.Sequence (Seq, (|>))
 
 import Server.Token (Token)
 
-import Crypto.JWT (emptyClaimsSet)
-import Servant.Auth.Server (ToJWT(encodeJWT))
 import ServerState.BotPermissions (BotPermissions)
 import ServerState.CompleteMessage (CompleteMessage)
 import ServerState.Id (Id)
@@ -24,9 +22,6 @@ data Bot = Bot
     , updates :: Updates
     , updateId :: Id
     }
-
-instance ToJWT Bot where
-    encodeJWT _ = emptyClaimsSet
 
 addUpdate :: Maybe Bot -> CompleteMessage -> Maybe Bot
 addUpdate Nothing _ = Nothing

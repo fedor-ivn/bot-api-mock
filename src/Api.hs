@@ -16,12 +16,9 @@ import Servant
     , Server
     , err401
     )
-import Servant.Auth.Server
-    ( Auth
-    , AuthResult(Authenticated)
-    , ThrowAll(throwAll)
-    )
+import Servant.Auth.Server (Auth, AuthResult(Authenticated), ThrowAll(throwAll))
 
+import Api.BotAuth (BotAuth, BotInfo(..))
 import Api.Close (close)
 import Api.GetMe (Me, getMe)
 import Api.GetUpdates (GetUpdates, getUpdates)
@@ -34,16 +31,15 @@ import Server.Context (Context(Context))
 import qualified Server.Context as Context
 import Server.Response (Response)
 import Server.Token (Token)
+
 import ServerState (ServerState)
-import ServerState.Bot (Bot)
 import ServerState.CompleteMessage (CompleteMessage)
 import ServerState.Update (Update)
-import Api.BotAuth (BotAuth)
 
 type Method a = Post '[JSON] (Response a)
 
 type Api =
-    Auth '[BotAuth] Bot
+    Auth '[BotAuth] BotInfo
         :> Capture "token" Token
         :> (
             "ping" :> Method Ping
@@ -63,7 +59,7 @@ type Api =
         )
 
 api :: TVar ServerState -> Actions -> Server Api
-api state actions (Authenticated _bot) token =
+api state actions (Authenticated (BotInfo bot botUser)) _ =
     return (ping context)
         :<|> getMe context
         :<|> logOut context
@@ -73,7 +69,8 @@ api state actions (Authenticated _bot) token =
   where
     context = Context
         { Context.state = state
-        , Context.token = token
+        , Context.bot = bot
+        , Context.botUser = botUser
         , Context.actions = actions
         }
 api _ _ _ _ = throwAll err401
