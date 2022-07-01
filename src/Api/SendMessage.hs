@@ -4,7 +4,7 @@
 module Api.SendMessage (SendMessage, sendMessage) where
 
 import Control.Monad.IO.Class (liftIO)
-import Control.Monad.State (runState)
+import Control.Monad.State (State, runState)
 import Data.Aeson
     ( FromJSON(parseJSON)
     , Options(fieldLabelModifier, omitNothingFields)
@@ -22,12 +22,14 @@ import Server.Actions (writeAction)
 import qualified Server.Actions as Actions
 import Server.Context (Context(..))
 import Server.Response (Response(Ok))
-import qualified Server.Token as Token
 
 import qualified ServerState
+import ServerState (ServerState)
 import ServerState.CompleteMessage (CompleteMessage)
 import ServerState.Id (Id)
 import ServerState.Time (Time(Time))
+import ServerState.User (User(User))
+import qualified ServerState.User as User
 
 data SendMessage = SendMessage
     { chatId :: Id
@@ -43,16 +45,25 @@ instance FromJSON SendMessage where
             , omitNothingFields = True
             }
 
+sendMessage'
+    :: SendMessage
+    -> User
+    -> Time
+    -> State ServerState (Response CompleteMessage)
+sendMessage' parameters botUser currentTime =
+    Ok <$> ServerState.sendMessage from to currentTime text
+  where
+    SendMessage { chatId = to, text } = parameters
+    User { User.userId = from } = botUser
+
 sendMessage :: Context -> SendMessage -> Handler (Response CompleteMessage)
-sendMessage Context { state, token, actions } SendMessage { chatId, text } = do
+sendMessage Context { state, botUser, actions } parameters = do
     date <- Time <$> liftIO getCurrentTime
-    writeAction token actions Actions.SendMessage
+    writeAction (User.userId botUser) actions Actions.SendMessage
     liftIO $ atomically $ do
         state' <- readTVar state
-        let from = Token.getId token
-        let to = chatId
         let
-            (message, newState) =
-                runState (ServerState.sendMessage from to date text) state'
-        writeTVar state newState
-        return (Ok message)
+            (response, updatedState) =
+                runState (sendMessage' parameters botUser date) state'
+        writeTVar state updatedState
+        return response
