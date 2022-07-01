@@ -78,12 +78,10 @@ startServer initialState serverSettings runTest = do
 
     testFinished <- OneTimeNotifier.new
     serverShutDown <- OneTimeNotifier.new
-    let
-        handleShutdown closeSocket = do
+    let handleShutdown closeSocket = do
             _ <- forkIO (OneTimeNotifier.wait testFinished >> closeSocket)
             return ()
-    let
-        serverSettings' =
+    let serverSettings' =
             serverSettings
                 & setGracefulShutdownTimeout (Just 1)
                 & setInstallShutdownHandler handleShutdown

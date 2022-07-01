@@ -34,7 +34,7 @@ newtype Config = Config (TVar ServerState)
 botAuthCheck :: Config -> AuthCheck BotInfo
 botAuthCheck (Config stateVar) = AuthCheck $ \request -> do
     let path = decodeUtf8 (rawPathInfo request)
-        tokenParseResult = do
+    let tokenParseResult = do
             rawToken <- case Text.split (== '/') path of
                 ("" : token : _) -> Right token
                 _ -> Left "Failed to extract the token"

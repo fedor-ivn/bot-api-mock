@@ -62,8 +62,7 @@ sendMessage Context { state, botUser, actions } parameters = do
     writeAction (User.userId botUser) actions Actions.SendMessage
     liftIO $ atomically $ do
         state' <- readTVar state
-        let
-            (response, updatedState) =
+        let (response, updatedState) =
                 runState (sendMessage' parameters botUser date) state'
         writeTVar state updatedState
         return response

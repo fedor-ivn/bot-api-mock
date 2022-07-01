@@ -10,4 +10,5 @@ instance ToJSON Time where
     toJSON (Time time) = toJSON (sinceEpoch time)
       where
         sinceEpoch :: UTCTime -> Integer -- Convert to Unix time
-        sinceEpoch = floor . nominalDiffTimeToSeconds . utcTimeToPOSIXSeconds
+        sinceEpoch =
+            floor . nominalDiffTimeToSeconds . utcTimeToPOSIXSeconds

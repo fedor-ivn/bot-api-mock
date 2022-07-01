@@ -145,8 +145,7 @@ sendMessage from to date text = do
     chat <- getPrivateChat chatId
     let chat' = fromMaybe PrivateChat.empty chat
     let (message, updatedChat) = PrivateChat.addMessage chat' from date text
-    let
-        completeMessage = CompleteMessage
+    let completeMessage = CompleteMessage
             { CompleteMessage.message = message
               -- TODO: replace `Id`s in the arguments with `User` and `Chat` to
               -- verify that the sender and the chat really exist
