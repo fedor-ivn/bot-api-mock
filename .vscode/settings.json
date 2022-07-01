@@ -4,5 +4,6 @@
     "haskell.formattingProvider": "brittany",
     "[haskell]": {
         "editor.tabSize": 4,
+        "editor.detectIndentation": false
     }
 }
