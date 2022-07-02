@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE DeriveGeneric #-}
 
 module ServerState.Message.Content
     ( Entity(..)
@@ -9,8 +10,11 @@ module ServerState.Message.Content
     , makeMessageContent
     ) where
 
+import Data.Aeson ((.=), ToJSON(toJSON), object)
+import Data.Aeson.Flatten (mergeTo)
 import Data.Maybe (mapMaybe)
 import Data.Text (Text)
+import GHC.Generics (Generic)
 import Prelude hiding (length)
 import Text.RE.Replace (Capture(..), matchCapture)
 import Text.RE.TDFA.Text ((*=~), Matches(allMatches), RE, re)
@@ -21,11 +25,18 @@ data Entity = Entity
     , offset :: Int
     , length :: Int
     }
-    deriving Show
+    deriving (Show, Generic)
+
+instance ToJSON Entity where
+    toJSON Entity { kind, offset, length } = mergeTo entity (toJSON kind)
+        where entity = object ["offset" .= offset, "length" .= length]
 
 -- The kind of an entity.
 data EntityKind = BotCommand
-    deriving (Eq, Show)
+    deriving (Eq, Show, Generic)
+
+instance ToJSON EntityKind where
+    toJSON BotCommand = object ["type" .= ("bot_command" :: Text)]
 
 -- The text of a message with its entities.
 data Content = Content
