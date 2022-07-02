@@ -7,7 +7,7 @@ import Data.Aeson (FromJSON, ToJSON)
 import Data.Int (Int64)
 import GHC.Generics (Generic)
 
--- | An Id of a User.
+-- | General type for Id.
 newtype Id = Id Int64 deriving (Ord, Eq, Show, Generic, Enum)
 
 instance ToJSON Id

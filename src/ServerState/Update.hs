@@ -14,6 +14,7 @@ import GHC.Generics (Generic)
 import ServerState.CompleteMessage (CompleteMessage)
 import ServerState.Id (Id)
 
+-- | Information about Update.
 data Update = Update
     { updateId :: Id
       -- TODO: should contain not a CompleteMessage but IDs to account for

@@ -23,6 +23,7 @@ data Bot = Bot
     , updateId :: Id
     }
 
+-- | Add update to the bot
 addUpdate :: Maybe Bot -> CompleteMessage -> Maybe Bot
 addUpdate Nothing _ = Nothing
 addUpdate (Just bot) message = Just

@@ -10,6 +10,7 @@ import ServerState.Message (Message(Message))
 import qualified ServerState.Message as Message
 import ServerState.User (User)
 
+-- | Information about the message that is to be returned by `getUpdates`.
 data CompleteMessage = CompleteMessage
     { message :: Message
     , chat :: Chat
