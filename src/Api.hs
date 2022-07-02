@@ -5,7 +5,6 @@
 
 module Api (Api, api) where
 
-import GHC.Conc (TVar)
 import qualified Servant
 import Servant
     (type (:<|>)((:<|>)), type (:>), Capture, JSON, Post, ReqBody, err401)
@@ -19,14 +18,12 @@ import Api.LogOut (logOut)
 import Api.Ping (Ping, ping)
 import Api.SendMessage (SendMessage, sendMessage)
 
-import Server.Actions (Actions)
 import Server.Context (Context(Context))
 import qualified Server.Context as Context
 import Server.Internal (Server)
 import Server.Response (Response)
 import Server.Token (Token)
 
-import ServerState (ServerState)
 import ServerState.CompleteMessage (CompleteMessage)
 import ServerState.Update (Update)
 
