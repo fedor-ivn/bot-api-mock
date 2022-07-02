@@ -22,6 +22,7 @@ dependencies:
   - warp
   - containers
   - mtl > 2
+  - regex
   - time > 1
 
 library:

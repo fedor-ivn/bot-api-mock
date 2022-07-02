@@ -43,6 +43,7 @@ library
       ServerState.Id
       ServerState.InitialBot
       ServerState.Message
+      ServerState.Message.Content
       ServerState.PrivateChat
       ServerState.Time
       ServerState.Update
@@ -59,6 +60,7 @@ library
     , containers
     , jose
     , mtl >2
+    , regex
     , servant-auth-server
     , servant-server
     , text
@@ -83,6 +85,7 @@ executable example
     , jose
     , mtl >2
     , process
+    , regex
     , servant-auth-server
     , servant-server
     , text
@@ -107,6 +110,7 @@ test-suite bot-api-mock-test
     , containers
     , jose
     , mtl >2
+    , regex
     , servant-auth-server
     , servant-server
     , text
