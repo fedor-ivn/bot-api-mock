@@ -32,6 +32,7 @@ import qualified Server.Context as Context
 import Server.Response (Response)
 import Server.Token (Token)
 
+import Api.DeleteWebhook (deleteWebhook)
 import ServerState (ServerState)
 import ServerState.CompleteMessage (CompleteMessage)
 import ServerState.Update (Update)
@@ -48,6 +49,7 @@ type Api =
             :<|> "getMe" :> Method Me
             :<|> "logOut" :> Method Bool
             :<|> "close" :> Method Bool
+            :<|> "deleteWebhook" :> Method Bool
             :<|> (
                 "sendMessage"
                     :> ReqBody '[JSON] SendMessage
@@ -67,6 +69,7 @@ api state actions (Authenticated (BotInfo bot botUser)) _ =
         :<|> getMe context
         :<|> logOut context
         :<|> close context
+        :<|> deleteWebhook context
         :<|> sendMessage context
         :<|> getUpdates context
   where

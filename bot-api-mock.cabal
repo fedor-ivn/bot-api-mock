@@ -22,6 +22,7 @@ library
       Api
       Api.BotAuth
       Api.Close
+      Api.DeleteWebhook
       Api.GetMe
       Api.GetUpdates
       Api.LogOut

@@ -5,7 +5,14 @@ import Control.Monad.Cont (MonadIO, liftIO)
 
 import ServerState.Id (Id)
 
-data ActionKind = GetMe | SendMessage | LogOut | Close | GetUpdates deriving (Eq)
+data ActionKind =
+    GetMe
+    | SendMessage
+    | LogOut
+    | Close
+    | GetUpdates
+    | DeleteWebhook
+    deriving (Eq)
 
 data Action = Action Id ActionKind
     deriving Eq
