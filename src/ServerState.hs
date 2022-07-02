@@ -31,6 +31,7 @@ import qualified ServerState.CompleteMessage as CompleteMessage
 import ServerState.Id (Id(Id))
 import ServerState.InitialBot (InitialBot)
 import qualified ServerState.InitialBot as InitialBot
+import ServerState.Message.Content (makeMessageContent)
 import ServerState.PrivateChat (PrivateChat)
 import qualified ServerState.PrivateChat as PrivateChat
 import ServerState.Time (Time)
@@ -144,7 +145,8 @@ sendMessage from to date text = do
 
     chat <- getPrivateChat chatId
     let chat' = fromMaybe PrivateChat.empty chat
-    let (message, updatedChat) = PrivateChat.addMessage chat' from date text
+    let content = makeMessageContent text
+    let (message, updatedChat) = PrivateChat.addMessage chat' from date content
     let completeMessage = CompleteMessage
             { CompleteMessage.message = message
               -- TODO: replace `Id`s in the arguments with `User` and `Chat` to
