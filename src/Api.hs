@@ -12,10 +12,10 @@ import Servant.Auth.Server (Auth, AuthResult(Authenticated), ThrowAll(throwAll))
 
 import Api.BotAuth (BotAuth, BotInfo(..))
 import Api.Close (close)
+import Api.DeleteWebhook (deleteWebhook)
 import Api.GetMe (Me, getMe)
 import Api.GetUpdates (GetUpdates, getUpdates)
 import Api.LogOut (logOut)
-import Api.Ping (Ping, ping)
 import Api.SendMessage (SendMessage, sendMessage)
 
 import Server.Context (Context(Context))
@@ -33,10 +33,10 @@ type Api =
     Auth '[BotAuth] BotInfo
         :> Capture "token" Token
         :> (
-            "ping" :> Method Ping
-            :<|> "getMe" :> Method Me
+            "getMe" :> Method Me
             :<|> "logOut" :> Method Bool
             :<|> "close" :> Method Bool
+            :<|> "deleteWebhook" :> Method Bool
             :<|> (
                 "sendMessage"
                     :> ReqBody '[JSON] SendMessage
@@ -51,12 +51,12 @@ type Api =
 
 api :: Server -> Servant.Server Api
 api server (Authenticated (BotInfo bot botUser)) _ =
-    return (ping context)
-        :<|> getMe context
-        :<|> logOut context
-        :<|> close context
-        :<|> sendMessage context
-        :<|> getUpdates context
+    getMe context
+    :<|> logOut context
+    :<|> close context
+    :<|> deleteWebhook context
+    :<|> sendMessage context
+    :<|> getUpdates context
   where
     context = Context
         { Context.server = server
