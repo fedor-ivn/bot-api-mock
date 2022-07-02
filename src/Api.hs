@@ -36,8 +36,10 @@ import ServerState (ServerState)
 import ServerState.CompleteMessage (CompleteMessage)
 import ServerState.Update (Update)
 
+-- | An alias for method return value.
 type Method a = Post '[JSON] (Response a)
 
+-- | A scheme of Bot API.
 type Api =
     Auth '[BotAuth] BotInfo
         :> Capture "token" Token
@@ -58,6 +60,7 @@ type Api =
             )
         )
 
+-- | Make a Server for the `Api`.
 api :: TVar ServerState -> Actions -> Server Api
 api state actions (Authenticated (BotInfo bot botUser)) _ =
     return (ping context)
