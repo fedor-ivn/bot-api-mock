@@ -8,6 +8,8 @@ import Data.Aeson ((.=), ToJSON(toJSON), object)
 import ServerState.Chat (Chat)
 import ServerState.Message (Message(Message))
 import qualified ServerState.Message as Message
+import ServerState.Message.Content (Content(Content))
+import qualified ServerState.Message.Content as Content
 import ServerState.User (User)
 
 -- | A `Message` which can be serialized.
@@ -29,6 +31,9 @@ instance ToJSON CompleteMessage where
         , "date" .= date
         , "chat" .= chat
         , "text" .= text
+        , "entities" .= entities
         ]
       where
-        Message { Message.messageId, Message.date, Message.text } = message
+        Message { Message.messageId, Message.date, Message.content } =
+            message
+        Content { Content.text, Content.entities } = content
