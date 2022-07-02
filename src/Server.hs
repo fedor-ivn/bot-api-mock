@@ -9,7 +9,7 @@ import Control.Monad.State (State, runState)
 import Crypto.JOSE (JWK)
 import Data.Function ((&))
 import Data.Typeable (Proxy(Proxy))
-import GHC.Conc (TVar, atomically, forkIO, newTVarIO, readTVar, writeTVar)
+import GHC.Conc (atomically, forkIO, newTVarIO, readTVar, writeTVar)
 import Network.Wai.Handler.Warp
     ( Settings
     , runSettings
@@ -24,17 +24,12 @@ import Servant.Server (serveWithContext)
 import Api (Api, api)
 import qualified Api.BotAuth as BotAuth
 
-import Server.Actions (Action(Action), ActionKind, Actions)
+import Server.Actions (Action(Action), ActionKind)
+import Server.Internal (Server(..))
 import qualified Server.OneTimeNotifier as OneTimeNotifier
 
 import ServerState (ServerState)
 import ServerState.Id (Id)
-
--- | A mock Bot API server.
-data Server = Server
-    { stateVar :: TVar ServerState
-    , actions :: Actions
-    }
 
 -- | Wait until the bot performs the expected action.
 waitForAction :: Id -> ActionKind -> Server -> IO ()
@@ -57,11 +52,10 @@ modifyState Server { stateVar } f = atomically $ do
 
 -- | Make an `Application` for the mock Bot API server.
 makeApplication :: JWK -> Server -> Application
-makeApplication key Server { stateVar, actions } = serveWithContext
-    (Proxy :: Proxy Api)
-    context
-    (api stateVar actions)
+makeApplication key server@Server { stateVar } = application
   where
+    application =
+        serveWithContext (Proxy :: Proxy Api) context (api server)
     context =
         defaultCookieSettings
             :. defaultJWTSettings key

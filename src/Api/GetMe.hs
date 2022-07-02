@@ -9,6 +9,8 @@ import Servant (Handler)
 
 import Server.Actions (ActionKind(GetMe), writeAction)
 import Server.Context (Context(..))
+import Server.Internal (Server(Server))
+import qualified Server.Internal as Server
 import Server.Response (Response(..))
 
 import ServerState.Bot (Bot(Bot))
@@ -28,6 +30,7 @@ getMe' Bot { Bot.permissions } user = Ok (Me user permissions)
 
 -- | Return information about the bot who called this method.
 getMe :: Context -> Handler (Response Me)
-getMe Context { bot, botUser, actions } = do
+getMe Context { bot, botUser, server } = do
     writeAction (User.userId botUser) actions GetMe
     return (getMe' bot botUser)
+    where Server { Server.actions } = server

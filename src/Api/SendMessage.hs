@@ -21,6 +21,8 @@ import Servant (Handler)
 import Server.Actions (writeAction)
 import qualified Server.Actions as Actions
 import Server.Context (Context(..))
+import Server.Internal (Server(Server))
+import qualified Server.Internal as Server
 import Server.Response (Response(Ok))
 
 import qualified ServerState
@@ -59,12 +61,13 @@ sendMessage' parameters botUser currentTime =
 
 -- | Send a message to a chat. 
 sendMessage :: Context -> SendMessage -> Handler (Response CompleteMessage)
-sendMessage Context { state, botUser, actions } parameters = do
+sendMessage Context { botUser, server } parameters = do
     date <- Time <$> liftIO getCurrentTime
     writeAction (User.userId botUser) actions Actions.SendMessage
     liftIO $ atomically $ do
-        state' <- readTVar state
+        state <- readTVar stateVar
         let (response, updatedState) =
-                runState (sendMessage' parameters botUser date) state'
-        writeTVar state updatedState
+                runState (sendMessage' parameters botUser date) state
+        writeTVar stateVar updatedState
         return response
+    where Server { Server.stateVar, Server.actions } = server

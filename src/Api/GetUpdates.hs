@@ -14,6 +14,8 @@ import Servant (Handler)
 import Server.Actions (writeAction)
 import qualified Server.Actions as Actions
 import Server.Context (Context(..))
+import Server.Internal (Server(Server))
+import qualified Server.Internal as Server
 import Server.Response (Response(Ok))
 
 import ServerState (ServerState)
@@ -49,9 +51,10 @@ getUpdates' GetUpdates { offset, limit } Bot { Bot.updates } = return
 
 -- | Returns a list of incoming updates.  
 getUpdates :: Context -> GetUpdates -> Handler (Response [Update])
-getUpdates Context { state, bot, botUser, actions } parameters = do
+getUpdates Context { bot, botUser, server } parameters = do
     writeAction (User.userId botUser) actions Actions.GetUpdates
     liftIO $ atomically $ do
-        state' <- readTVar state
-        let response = evalState (getUpdates' parameters bot) state'
+        state <- readTVar stateVar
+        let response = evalState (getUpdates' parameters bot) state
         return response
+    where Server { Server.actions, Server.stateVar } = server

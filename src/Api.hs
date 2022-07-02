@@ -6,16 +6,9 @@
 module Api (Api, api) where
 
 import GHC.Conc (TVar)
+import qualified Servant
 import Servant
-    ( type (:<|>)((:<|>))
-    , type (:>)
-    , Capture
-    , JSON
-    , Post
-    , ReqBody
-    , Server
-    , err401
-    )
+    (type (:<|>)((:<|>)), type (:>), Capture, JSON, Post, ReqBody, err401)
 import Servant.Auth.Server (Auth, AuthResult(Authenticated), ThrowAll(throwAll))
 
 import Api.BotAuth (BotAuth, BotInfo(..))
@@ -29,18 +22,16 @@ import Api.SendMessage (SendMessage, sendMessage)
 import Server.Actions (Actions)
 import Server.Context (Context(Context))
 import qualified Server.Context as Context
+import Server.Internal (Server)
 import Server.Response (Response)
 import Server.Token (Token)
 
-import Api.DeleteWebhook (deleteWebhook)
 import ServerState (ServerState)
 import ServerState.CompleteMessage (CompleteMessage)
 import ServerState.Update (Update)
 
--- | An alias for method return value.
 type Method a = Post '[JSON] (Response a)
 
--- | A scheme of Bot API.
 type Api =
     Auth '[BotAuth] BotInfo
         :> Capture "token" Token
@@ -49,7 +40,6 @@ type Api =
             :<|> "getMe" :> Method Me
             :<|> "logOut" :> Method Bool
             :<|> "close" :> Method Bool
-            :<|> "deleteWebhook" :> Method Bool
             :<|> (
                 "sendMessage"
                     :> ReqBody '[JSON] SendMessage
@@ -62,21 +52,18 @@ type Api =
             )
         )
 
--- | Make a mock Bot API server.
-api :: TVar ServerState -> Actions -> Server Api
-api state actions (Authenticated (BotInfo bot botUser)) _ =
+api :: Server -> Servant.Server Api
+api server (Authenticated (BotInfo bot botUser)) _ =
     return (ping context)
         :<|> getMe context
         :<|> logOut context
         :<|> close context
-        :<|> deleteWebhook context
         :<|> sendMessage context
         :<|> getUpdates context
   where
     context = Context
-        { Context.state = state
+        { Context.server = server
         , Context.bot = bot
         , Context.botUser = botUser
-        , Context.actions = actions
         }
-api _ _ _ _ = throwAll err401
+api _ _ _ = throwAll err401
