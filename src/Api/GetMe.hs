@@ -17,15 +17,18 @@ import ServerState.BotPermissions (BotPermissions)
 import ServerState.User (User)
 import qualified ServerState.User as User
 
+-- | Stores parameters to be returned from getMe.
 data Me = Me User BotPermissions
 
 instance ToJSON Me where
     toJSON (Me bot permissions) = mergeTo (toJSON bot) (toJSON permissions)
 
-
+-- | Merge all information about the bot in Responce.
 getMe' :: Bot -> User -> Response Me
 getMe' Bot { Bot.permissions } user = Ok (Me user permissions)
 
+-- | This method simply test your bot's authentication token.
+-- | Returns information about bot in `User` frormat.
 getMe :: Context -> Handler (Response Me)
 getMe Context { bot, botUser, actions } = do
     writeAction (User.userId botUser) actions GetMe

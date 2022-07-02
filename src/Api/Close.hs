@@ -11,6 +11,9 @@ import Server.Response (Response(Ok))
 import ServerState.User (User(User))
 import qualified ServerState.User as User
 
+-- | this method should be used to close the bot instance
+-- | before moving between local servers.
+-- | Currently implemented as noop.
 close :: Context -> Handler (Response Bool)
 close Context { botUser = User { User.userId }, actions } = do
     writeAction userId actions LogOut

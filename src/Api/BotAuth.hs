@@ -31,6 +31,8 @@ data BotInfo = BotInfo Bot User
 
 newtype Config = Config (TVar ServerState)
 
+-- | Authenticate a bot using its token. If successful, returns information
+-- about the bot.
 botAuthCheck :: Config -> AuthCheck BotInfo
 botAuthCheck (Config stateVar) = AuthCheck $ \request -> do
     let path = decodeUtf8 (rawPathInfo request)

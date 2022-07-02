@@ -31,9 +31,10 @@ import ServerState.Time (Time(Time))
 import ServerState.User (User(User))
 import qualified ServerState.User as User
 
+-- Information about the massage to be sent.
 data SendMessage = SendMessage
-    { chatId :: Id
-    , text :: Text
+    { chatId :: Id -- id of target chat.
+    , text :: Text -- text of message.
     }
     deriving Generic
 
@@ -45,6 +46,7 @@ instance FromJSON SendMessage where
             , omitNothingFields = True
             }
 
+-- | Constructing message.
 sendMessage'
     :: SendMessage
     -> User
@@ -56,6 +58,7 @@ sendMessage' parameters botUser currentTime =
     SendMessage { chatId = to, text } = parameters
     User { User.userId = from } = botUser
 
+-- | Use this method to send message. If successful, returns the Message. 
 sendMessage :: Context -> SendMessage -> Handler (Response CompleteMessage)
 sendMessage Context { state, botUser, actions } parameters = do
     date <- Time <$> liftIO getCurrentTime

@@ -24,18 +24,21 @@ import ServerState.Update (Update(Update))
 import qualified ServerState.Update as Update
 import qualified ServerState.User as User
 
+-- | Stores optional parameters for getUpdates. 
 data GetUpdates = GetUpdates
-    { offset :: Maybe Id
-    , limit :: Maybe Int
+    { offset :: Maybe Id -- id of update to start with.
+    , limit :: Maybe Int -- maximum number of updates that can be returned.
     }
     deriving Generic
 
 instance FromJSON GetUpdates
 
+-- | Return range of updates starting from offset.
 getRange :: Id -> Int -> [Update] -> [Update]
 getRange firstId limit updates = take limit (dropWhile isOldUpdate updates)
     where isOldUpdate Update { Update.updateId } = updateId < firstId
 
+-- | Get proper range of updates from Bot.
 getUpdates' :: GetUpdates -> Bot -> State ServerState (Response [Update])
 getUpdates' GetUpdates { offset, limit } Bot { Bot.updates } = return
     (Ok (getRange offset' limit' updates'))
@@ -44,6 +47,7 @@ getUpdates' GetUpdates { offset, limit } Bot { Bot.updates } = return
     limit' = fromMaybe 100 limit
     offset' = fromMaybe (Id 0) offset
 
+-- | Returns a list of incoming updates.  
 getUpdates :: Context -> GetUpdates -> Handler (Response [Update])
 getUpdates Context { state, bot, botUser, actions } parameters = do
     writeAction (User.userId botUser) actions Actions.GetUpdates
