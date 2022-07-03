@@ -16,7 +16,6 @@ import ServerState.User (User)
 -- message. Before returning a message to the bot, it must be enriched with
 -- additional information, which, however, would be duplicated if stored as-is
 -- in `ServerState`.
-
 data CompleteMessage = CompleteMessage
     { message :: Message
     , chat :: Chat
