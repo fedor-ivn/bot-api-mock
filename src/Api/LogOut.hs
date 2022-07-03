@@ -12,7 +12,7 @@ import ServerState.User (User(User))
 import qualified ServerState.User as User
 
 -- | Log out bot from the cloud Bot API Server before launching the bot locally.
--- | Currently implemented as noop.
+--  Currently implemented as noop.
 logOut :: Context -> Handler (Response Bool)
 logOut Context { botUser = User { User.userId }, actions } = do
     writeAction userId actions LogOut

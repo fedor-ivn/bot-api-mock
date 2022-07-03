@@ -24,10 +24,10 @@ import ServerState.Update (Update(Update))
 import qualified ServerState.Update as Update
 import qualified ServerState.User as User
 
--- | Stores optional parameters for getUpdates. 
+-- | Parameters for the `getUpdates` method.
 data GetUpdates = GetUpdates
-    { offset :: Maybe Id -- id of update to start with.
-    , limit :: Maybe Int -- maximum number of updates that can be returned.
+    { offset :: Maybe Id -- ^ The Id of the first update.
+    , limit :: Maybe Int -- ^ Maximum number of updates that can be returned.
     }
     deriving Generic
 
