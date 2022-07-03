@@ -60,7 +60,7 @@ type Api =
             )
         )
 
--- | Make a Server for the `Api`.
+-- | Make a mock Bot API server.
 api :: TVar ServerState -> Actions -> Server Api
 api state actions (Authenticated (BotInfo bot botUser)) _ =
     return (ping context)
