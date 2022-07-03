@@ -10,7 +10,13 @@ import ServerState.Message (Message(Message))
 import qualified ServerState.Message as Message
 import ServerState.User (User)
 
--- | Information about the message that is to be returned by `getUpdates`.
+-- | A `Message` which can be serialized.
+--
+-- The `Message` datatype contains only the very necessary information about a
+-- message. Before returning a message to the bot, it must be enriched with
+-- additional information, which, however, would be duplicated if stored as-is
+-- in `ServerState`.
+
 data CompleteMessage = CompleteMessage
     { message :: Message
     , chat :: Chat

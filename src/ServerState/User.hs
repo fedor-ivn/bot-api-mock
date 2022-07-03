@@ -15,7 +15,7 @@ import GHC.Generics (Generic)
 
 import ServerState.Id (Id)
 
--- | Information about the user.
+-- | Information about a user.
 data User = User
     { userId :: Id
     , username :: Maybe Text
