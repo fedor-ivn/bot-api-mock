@@ -14,7 +14,6 @@ module ServerState
 import Control.Monad.State (MonadState(get, put), State)
 import Data.List (find)
 import qualified Data.List.NonEmpty as List.NonEmpty
-import Data.Map (Map)
 import qualified Data.Map as Map
 import Data.Maybe (fromJust, fromMaybe)
 import qualified Data.Sequence as Seq
@@ -29,6 +28,7 @@ import ServerState.CompleteMessage (CompleteMessage(CompleteMessage))
 import qualified ServerState.CompleteMessage as CompleteMessage
 import ServerState.InitialBot (InitialBot)
 import qualified ServerState.InitialBot as InitialBot
+import ServerState.Internal (Bots, PrivateChats, ServerState(..))
 import ServerState.Message.Content (makeMessageContent)
 import ServerState.PrivateChat (PrivateChat)
 import qualified ServerState.PrivateChat as PrivateChat
@@ -39,16 +39,6 @@ import ServerState.Update.Id (UpdateId(UpdateId))
 import ServerState.User (User(User))
 import qualified ServerState.User as User
 import ServerState.User.Id (UserId)
-
-type PrivateChats = Map PrivateChatId PrivateChat
-
-type Bots = Map UserId Bot
-
-data ServerState = ServerState
-    { users :: [User]
-    , privateChats :: PrivateChats
-    , bots :: Bots
-    }
 
 -- | Initialize a `ServerState` with at least one user and one bot.
 initialize

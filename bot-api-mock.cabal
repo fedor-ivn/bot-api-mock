@@ -40,6 +40,7 @@ library
       ServerState.Chat
       ServerState.CompleteMessage
       ServerState.InitialBot
+      ServerState.Internal
       ServerState.Message
       ServerState.Message.Content
       ServerState.Message.Id
