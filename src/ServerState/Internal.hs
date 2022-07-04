@@ -10,7 +10,6 @@ module ServerState.Internal
     ) where
 
 import Control.Monad.State (MonadState(get, put), State)
-import Data.List (find)
 import Data.Map (Map)
 import qualified Data.Map as Map
 
@@ -20,7 +19,6 @@ import qualified ServerState.Bot as Bot
 import ServerState.PrivateChat (PrivateChat)
 import ServerState.PrivateChat.Id (PrivateChatId)
 import ServerState.User (User)
-import qualified ServerState.User as User
 import ServerState.User.Id (UserId)
 
 type Users = Map UserId User
@@ -38,7 +36,7 @@ data ServerState = ServerState
 getUser :: UserId -> State ServerState (Maybe User)
 getUser userId = do
     ServerState { users } <- get
-    let user = find ((userId ==) . User.userId) users
+    let user = Map.lookup userId users
     return user
 
 -- | Get a bot by its ID.
