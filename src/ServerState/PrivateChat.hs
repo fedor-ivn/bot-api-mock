@@ -1,6 +1,5 @@
 module ServerState.PrivateChat
     ( PrivateChat(..)
-    , makeId
     , nextMessageId
     , addMessage
     , empty
@@ -21,15 +20,6 @@ newtype PrivateChat = PrivateChat [Message]
 -- | An empty private chat.
 empty :: PrivateChat
 empty = PrivateChat []
-
--- | Generate chat's id in the way that the least id comes first.
---
--- >>> makeId (Id 2) (Id 1)
--- (Id 1,Id 2)
-makeId :: UserId -> UserId -> (UserId, UserId)
-makeId from to
-    | from < to = (from, to)
-    | otherwise = (to, from)
 
 -- | Create an Id for a new message in the chat.
 nextMessageId :: PrivateChat -> Id

@@ -34,15 +34,14 @@ import qualified ServerState.InitialBot as InitialBot
 import ServerState.Message.Content (makeMessageContent)
 import ServerState.PrivateChat (PrivateChat)
 import qualified ServerState.PrivateChat as PrivateChat
+import ServerState.PrivateChat.Id (PrivateChatId)
+import qualified ServerState.PrivateChat.Id as PrivateChatId
 import ServerState.Time (Time)
 import ServerState.User (User(User))
 import qualified ServerState.User as User
 import ServerState.User.Id (UserId)
 
--- The IDs are sorted in ascending order, as otherwise (1, 2) and (2, 1)
--- would map to different chats. Use `PrivateChat.makeChatId` to generate such
--- an id.
-type PrivateChats = Map (UserId, UserId) PrivateChat
+type PrivateChats = Map PrivateChatId PrivateChat
 
 type Bots = Map UserId Bot
 
@@ -107,11 +106,11 @@ getPrivateChats = do
     return privateChats
 
 -- | Return private chat by Id from the State.
-getPrivateChat :: (UserId, UserId) -> State ServerState (Maybe PrivateChat)
+getPrivateChat :: PrivateChatId -> State ServerState (Maybe PrivateChat)
 getPrivateChat chatId = Map.lookup chatId <$> getPrivateChats
 
 -- | Add new private chat to the State.
-putPrivateChat :: (UserId, UserId) -> PrivateChat -> State ServerState ()
+putPrivateChat :: PrivateChatId -> PrivateChat -> State ServerState ()
 putPrivateChat chatId chat = do
     state@ServerState { privateChats } <- get
     put (state { privateChats = Map.insert chatId chat privateChats })
@@ -143,7 +142,7 @@ sendMessage from to date text = do
     fromUser <- getUser from
     toUser <- getUser to
 
-    let chatId = PrivateChat.makeId from to
+    let chatId = PrivateChatId.make from to
 
     chat <- getPrivateChat chatId
     let chat' = fromMaybe PrivateChat.empty chat

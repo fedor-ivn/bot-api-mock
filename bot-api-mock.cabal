@@ -44,6 +44,7 @@ library
       ServerState.Message
       ServerState.Message.Content
       ServerState.PrivateChat
+      ServerState.PrivateChat.Id
       ServerState.Time
       ServerState.Update
       ServerState.User
