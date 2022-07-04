@@ -4,6 +4,7 @@ module ServerState.Internal
     ( ServerState(..)
     , getUser
     , getBot
+    , putBot
     , getPrivateChat
     , putPrivateChat
     ) where
@@ -13,7 +14,9 @@ import Data.List (find)
 import Data.Map (Map)
 import qualified Data.Map as Map
 
-import ServerState.Bot (Bot)
+import qualified Server.Token as Token
+import ServerState.Bot (Bot(Bot))
+import qualified ServerState.Bot as Bot
 import ServerState.PrivateChat (PrivateChat)
 import ServerState.PrivateChat.Id (PrivateChatId)
 import ServerState.User (User)
@@ -44,6 +47,15 @@ getBot botId = do
     ServerState { bots } <- get
     let bot = Map.lookup botId bots
     return bot
+
+-- | Update a bot or insert a new one.
+putBot :: Bot -> State ServerState ()
+putBot bot@Bot { Bot.token } = do
+    state@ServerState { bots } <- get
+
+    let botId = Token.getId token
+    let bots' = Map.insert botId bot bots
+    put (state { bots = bots' })
 
 -- | Get a private chat by its ID.
 getPrivateChat :: PrivateChatId -> State ServerState (Maybe PrivateChat)

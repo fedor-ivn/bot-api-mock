@@ -11,7 +11,7 @@ module ServerState
     , sendMessage
     ) where
 
-import Control.Monad.State (MonadState(get, put), State)
+import Control.Monad.State (State)
 import qualified Data.List.NonEmpty as List.NonEmpty
 import qualified Data.Map as Map
 import Data.Maybe (fromJust, fromMaybe)
@@ -20,7 +20,7 @@ import Data.Text (Text)
 
 import qualified Server.Token as Token
 
-import ServerState.Bot (Bot(Bot, token), addUpdate)
+import ServerState.Bot (Bot(Bot), addUpdate)
 import qualified ServerState.Bot as Bot
 import qualified ServerState.Chat as Chat
 import ServerState.CompleteMessage (CompleteMessage(CompleteMessage))
@@ -28,7 +28,7 @@ import qualified ServerState.CompleteMessage as CompleteMessage
 import ServerState.InitialBot (InitialBot)
 import qualified ServerState.InitialBot as InitialBot
 import ServerState.Internal
-    (ServerState(..), getBot, getPrivateChat, getUser, putPrivateChat)
+    (ServerState(..), getBot, getPrivateChat, getUser, putBot, putPrivateChat)
 import ServerState.Message.Content (makeMessageContent)
 import qualified ServerState.PrivateChat as PrivateChat
 import qualified ServerState.PrivateChat.Id as PrivateChatId
@@ -76,12 +76,6 @@ initialize initialUsers initialBots = ServerState
             , Bot.nextUpdateId = UpdateId 0
             }
 
-putUpdatedBot :: Bot -> State ServerState ()
-putUpdatedBot bot = do
-    state@ServerState { bots } <- get
-    let botId = Token.getId (token bot)
-    put (state { bots = Map.insert botId bot bots })
-
 -- | Send new message in private chat.
 sendMessage
     :: UserId -> UserId -> Time -> Text -> State ServerState CompleteMessage
@@ -105,8 +99,7 @@ sendMessage from to date text = do
 
     getBot to >>= \case
         Nothing -> return ()
-        Just bot -> putUpdatedBot bot'
-            where bot' = addUpdate completeMessage bot
+        Just bot -> putBot (addUpdate completeMessage bot)
 
     putPrivateChat chatId updatedChat
     return completeMessage
