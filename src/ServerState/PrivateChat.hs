@@ -1,9 +1,4 @@
-module ServerState.PrivateChat
-    ( PrivateChat(..)
-    , nextMessageId
-    , addMessage
-    , empty
-    ) where
+module ServerState.PrivateChat (PrivateChat(..), addMessage, empty) where
 
 import Data.Maybe (listToMaybe)
 
