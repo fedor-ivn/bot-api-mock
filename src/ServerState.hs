@@ -40,17 +40,20 @@ import ServerState.User.Id (UserId)
 -- | Initialize a `ServerState` with at least one user and one bot.
 initialize
     :: List.NonEmpty.NonEmpty User
-    -> List.NonEmpty.NonEmpty ServerState.InitialBot.InitialBot
+    -> List.NonEmpty.NonEmpty InitialBot
     -> ServerState
-initialize users initialBots = ServerState
-    { users = allUsers
+initialize initialUsers initialBots = ServerState
+    { users
     , privateChats = Map.empty
     , bots
     }
   where
-    users' = List.NonEmpty.toList users
+    initialUsers' = List.NonEmpty.toList initialUsers
     initialBots' = List.NonEmpty.toList initialBots
-    allUsers = users' ++ botUsers
+
+    users' = initialUsers' ++ botUsers
+    users = Map.fromList (map makeUsersEntry users')
+    makeUsersEntry user@User { User.userId } = (userId, user)
 
     botUsers = map makeBotUser initialBots'
     makeBotUser bot = User

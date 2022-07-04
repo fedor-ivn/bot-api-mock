@@ -20,12 +20,13 @@ import ServerState.User (User)
 import qualified ServerState.User as User
 import ServerState.User.Id (UserId)
 
+type Users = Map UserId User
 type PrivateChats = Map PrivateChatId PrivateChat
 type Bots = Map UserId Bot
 
 -- | The state of the mock Bot API. It stores all of the users, bots and chats.
 data ServerState = ServerState
-    { users :: [User]
+    { users :: Users
     , privateChats :: PrivateChats
     , bots :: Bots
     }
