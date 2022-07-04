@@ -39,7 +39,6 @@ library
       ServerState.BotPermissions
       ServerState.Chat
       ServerState.CompleteMessage
-      ServerState.Id
       ServerState.InitialBot
       ServerState.Message
       ServerState.Message.Content
