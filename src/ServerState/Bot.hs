@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -Wno-missing-fields #-}
+{-# LANGUAGE NamedFieldPuns #-}
 
 module ServerState.Bot (Bot(..), addUpdate) where
 
@@ -20,15 +20,12 @@ data Bot = Bot
     { token :: Token
     , permissions :: BotPermissions
     , updates :: Updates
-    , updateId :: UpdateId
+    , nextUpdateId :: UpdateId
     }
 
--- | Add a new update for the bot
-addUpdate :: Maybe Bot -> CompleteMessage -> Maybe Bot
-addUpdate Nothing _ = Nothing
-addUpdate (Just bot) message = Just
-    $ bot { updates = upds |> newUpdate, updateId = nextUpdateId }
-  where
-    upds = updates bot
-    nextUpdateId = succ (updateId bot)
-    newUpdate = Update (updateId bot) message
+-- | Add a new update for the bot.
+addUpdate :: CompleteMessage -> Bot -> Bot
+addUpdate message bot@Bot { updates, nextUpdateId } = bot
+    { updates = updates |> Update nextUpdateId message
+    , nextUpdateId = succ nextUpdateId
+    }

@@ -1,5 +1,6 @@
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE LambdaCase #-}
 
 module ServerState
     ( ServerState
@@ -72,12 +73,11 @@ initialize initialUsers initialBots = ServerState
             { Bot.token = InitialBot.token initialBot
             , Bot.permissions = InitialBot.permissions initialBot
             , Bot.updates = Seq.empty
-            , Bot.updateId = UpdateId 0
+            , Bot.nextUpdateId = UpdateId 0
             }
 
-putUpdatedBot :: Maybe Bot -> State ServerState ()
-putUpdatedBot Nothing = return ()
-putUpdatedBot (Just bot) = do
+putUpdatedBot :: Bot -> State ServerState ()
+putUpdatedBot bot = do
     state@ServerState { bots } <- get
     let botId = Token.getId (token bot)
     put (state { bots = Map.insert botId bot bots })
@@ -103,9 +103,10 @@ sendMessage from to date text = do
             , CompleteMessage.chat = Chat.PrivateChat (fromJust toUser)
             }
 
-    bot <- getBot to
-    let updatedBot = addUpdate bot completeMessage
+    getBot to >>= \case
+        Nothing -> return ()
+        Just bot -> putUpdatedBot bot'
+            where bot' = addUpdate completeMessage bot
 
-    putUpdatedBot updatedBot
     putPrivateChat chatId updatedChat
     return completeMessage
