@@ -43,6 +43,7 @@ library
       ServerState.InitialBot
       ServerState.Message
       ServerState.Message.Content
+      ServerState.Message.Id
       ServerState.PrivateChat
       ServerState.PrivateChat.Id
       ServerState.Time
