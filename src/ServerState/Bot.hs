@@ -8,8 +8,8 @@ import Server.Token (Token)
 
 import ServerState.BotPermissions (BotPermissions)
 import ServerState.CompleteMessage (CompleteMessage)
-import ServerState.Id (Id)
 import ServerState.Update (Update(Update))
+import ServerState.Update.Id (UpdateId)
 
 -- | We push elements to the right end
 -- and get element from the left end
@@ -20,7 +20,7 @@ data Bot = Bot
     { token :: Token
     , permissions :: BotPermissions
     , updates :: Updates
-    , updateId :: Id
+    , updateId :: UpdateId
     }
 
 -- | Add a new update for the bot

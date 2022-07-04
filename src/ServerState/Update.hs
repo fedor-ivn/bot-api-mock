@@ -12,11 +12,11 @@ import Data.Aeson
 import GHC.Generics (Generic)
 
 import ServerState.CompleteMessage (CompleteMessage)
-import ServerState.Id (Id)
+import ServerState.Update.Id (UpdateId)
 
 -- | Information about an update.
 data Update = Update
-    { updateId :: Id
+    { updateId :: UpdateId
       -- TODO: should contain not a CompleteMessage but IDs to account for
       -- possible edits of user information
     , message :: CompleteMessage

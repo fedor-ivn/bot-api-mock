@@ -28,7 +28,6 @@ import qualified ServerState.Bot as Bot
 import qualified ServerState.Chat as Chat
 import ServerState.CompleteMessage (CompleteMessage(CompleteMessage))
 import qualified ServerState.CompleteMessage as CompleteMessage
-import ServerState.Id (Id(Id))
 import ServerState.InitialBot (InitialBot)
 import qualified ServerState.InitialBot as InitialBot
 import ServerState.Message.Content (makeMessageContent)
@@ -37,6 +36,7 @@ import qualified ServerState.PrivateChat as PrivateChat
 import ServerState.PrivateChat.Id (PrivateChatId)
 import qualified ServerState.PrivateChat.Id as PrivateChatId
 import ServerState.Time (Time)
+import ServerState.Update.Id (UpdateId(UpdateId))
 import ServerState.User (User(User))
 import qualified ServerState.User as User
 import ServerState.User.Id (UserId)
@@ -83,7 +83,7 @@ initialize users initialBots = ServerState
             { Bot.token = InitialBot.token initialBot
             , Bot.permissions = InitialBot.permissions initialBot
             , Bot.updates = Seq.empty
-            , Bot.updateId = Id 0
+            , Bot.updateId = UpdateId 0
             }
 
 -- | Return a list of users from the State.

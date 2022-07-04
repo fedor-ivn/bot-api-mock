@@ -48,6 +48,7 @@ library
       ServerState.PrivateChat.Id
       ServerState.Time
       ServerState.Update
+      ServerState.Update.Id
       ServerState.User
       ServerState.User.Id
   other-modules:
