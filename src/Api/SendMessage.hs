@@ -28,14 +28,14 @@ import Server.Response (Response(Ok))
 import qualified ServerState
 import ServerState (ServerState)
 import ServerState.CompleteMessage (CompleteMessage)
-import ServerState.Id (Id)
 import ServerState.Time (Time(Time))
 import ServerState.User (User(User))
 import qualified ServerState.User as User
+import ServerState.User.Id (UserId)
 
 -- | Parameters for the `sendMessage` method.
 data SendMessage = SendMessage
-    { chatId :: Id -- ^ Id of the target chat.
+    { chatId :: UserId -- ^ Id of the target chat.
     , text :: Text -- ^ Text of the message.
     }
     deriving Generic
@@ -59,7 +59,7 @@ sendMessage' parameters botUser currentTime =
     SendMessage { chatId = to, text } = parameters
     User { User.userId = from } = botUser
 
--- | Send a message to a chat. 
+-- | Send a message to a chat.
 sendMessage :: Context -> SendMessage -> Handler (Response CompleteMessage)
 sendMessage Context { botUser, server } parameters = do
     date <- Time <$> liftIO getCurrentTime

@@ -18,21 +18,21 @@ import Data.Time (getCurrentTime)
 import ServerState (ServerState)
 import qualified ServerState
 import qualified ServerState.BotPermissions as BotPermissions
-import ServerState.Id (Id(Id))
 import ServerState.InitialBot (InitialBot(InitialBot))
 import qualified ServerState.InitialBot as InitialBot
 import ServerState.Time (Time(Time))
 import ServerState.User (User(User))
 import qualified ServerState.User as User
+import ServerState.User.Id (UserId(UserId))
 
-userId :: Id
-userId = Id 1
+userId :: UserId
+userId = UserId 1
 
 botToken :: Text
 botToken = "2:random-characters"
 
-botId :: Id
-botId = Id 2
+botId :: UserId
+botId = UserId 2
 
 initialState :: ServerState
 initialState = ServerState.initialize (user :| []) (bot :| [])

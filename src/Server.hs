@@ -29,10 +29,10 @@ import Server.Internal (Server(..))
 import qualified Server.OneTimeNotifier as OneTimeNotifier
 
 import ServerState (ServerState)
-import ServerState.Id (Id)
+import ServerState.User.Id (UserId)
 
 -- | Wait until the bot performs the expected action.
-waitForAction :: Id -> ActionKind -> Server -> IO ()
+waitForAction :: UserId -> ActionKind -> Server -> IO ()
 waitForAction expectedActor expectedKind Server { actions } = wait
   where
     expectedAction = Action expectedActor expectedKind

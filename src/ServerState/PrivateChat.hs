@@ -13,6 +13,7 @@ import ServerState.Message (Message(Message))
 import qualified ServerState.Message as Message
 import ServerState.Message.Content (Content)
 import ServerState.Time (Time)
+import ServerState.User.Id (UserId)
 
 -- | A private chat between two users.
 newtype PrivateChat = PrivateChat [Message]
@@ -25,7 +26,7 @@ empty = PrivateChat []
 --
 -- >>> makeId (Id 2) (Id 1)
 -- (Id 1,Id 2)
-makeId :: Id -> Id -> (Id, Id)
+makeId :: UserId -> UserId -> (UserId, UserId)
 makeId from to
     | from < to = (from, to)
     | otherwise = (to, from)
@@ -36,7 +37,8 @@ nextMessageId (PrivateChat messages) = Id (lastId + 1)
     where (Id lastId) = maybe (Id 0) Message.messageId (listToMaybe messages)
 
 -- | Add new message to a private chat.
-addMessage :: PrivateChat -> Id -> Time -> Content -> (Message, PrivateChat)
+addMessage
+    :: PrivateChat -> UserId -> Time -> Content -> (Message, PrivateChat)
 addMessage chat@(PrivateChat messages) from date content =
     (message, PrivateChat (message : messages))
   where

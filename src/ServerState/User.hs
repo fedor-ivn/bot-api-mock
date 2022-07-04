@@ -13,11 +13,11 @@ import Data.Aeson
 import Data.Text (Text)
 import GHC.Generics (Generic)
 
-import ServerState.Id (Id)
+import ServerState.User.Id (UserId)
 
 -- | Information about a user.
 data User = User
-    { userId :: Id
+    { userId :: UserId
     , username :: Maybe Text
     , firstName :: Text
     , lastName :: Maybe Text

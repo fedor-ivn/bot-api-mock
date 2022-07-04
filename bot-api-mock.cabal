@@ -47,6 +47,7 @@ library
       ServerState.Time
       ServerState.Update
       ServerState.User
+      ServerState.User.Id
   other-modules:
       Paths_bot_api_mock
   hs-source-dirs:

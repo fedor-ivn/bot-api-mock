@@ -3,7 +3,7 @@ module Server.Actions (Actions, Action(..), ActionKind(..), writeAction) where
 import Control.Concurrent.Chan (Chan, writeChan)
 import Control.Monad.Cont (MonadIO, liftIO)
 
-import ServerState.Id (Id)
+import ServerState.User.Id (UserId)
 
 data ActionKind =
     GetMe
@@ -14,11 +14,11 @@ data ActionKind =
     | DeleteWebhook
     deriving (Eq)
 
-data Action = Action Id ActionKind
+data Action = Action UserId ActionKind
     deriving Eq
 
 type Actions = Chan Action
 
-writeAction :: MonadIO m => Id -> Actions -> ActionKind -> m ()
+writeAction :: MonadIO m => UserId -> Actions -> ActionKind -> m ()
 writeAction actor actions kind = liftIO (writeChan actions action)
     where action = Action actor kind

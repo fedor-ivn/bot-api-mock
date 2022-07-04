@@ -37,13 +37,14 @@ import qualified ServerState.PrivateChat as PrivateChat
 import ServerState.Time (Time)
 import ServerState.User (User(User))
 import qualified ServerState.User as User
+import ServerState.User.Id (UserId)
 
 -- The IDs are sorted in ascending order, as otherwise (1, 2) and (2, 1)
 -- would map to different chats. Use `PrivateChat.makeChatId` to generate such
 -- an id.
-type PrivateChats = Map (Id, Id) PrivateChat
+type PrivateChats = Map (UserId, UserId) PrivateChat
 
-type Bots = Map Id Bot
+type Bots = Map UserId Bot
 
 data ServerState = ServerState
     { users :: [User]
@@ -93,7 +94,7 @@ getUsers = do
     return users
 
 -- | Return a user by Id from the State.
-getUser :: Id -> State ServerState (Maybe User)
+getUser :: UserId -> State ServerState (Maybe User)
 getUser userId = do
     users <- getUsers
     let user = Data.List.find (\x -> User.userId x == userId) users
@@ -106,11 +107,11 @@ getPrivateChats = do
     return privateChats
 
 -- | Return private chat by Id from the State.
-getPrivateChat :: (Id, Id) -> State ServerState (Maybe PrivateChat)
+getPrivateChat :: (UserId, UserId) -> State ServerState (Maybe PrivateChat)
 getPrivateChat chatId = Map.lookup chatId <$> getPrivateChats
 
 -- | Add new private chat to the State.
-putPrivateChat :: (Id, Id) -> PrivateChat -> State ServerState ()
+putPrivateChat :: (UserId, UserId) -> PrivateChat -> State ServerState ()
 putPrivateChat chatId chat = do
     state@ServerState { privateChats } <- get
     put (state { privateChats = Map.insert chatId chat privateChats })
@@ -122,7 +123,7 @@ getBots = do
     return bots
 
 -- | Get information about a bot given its ID.
-getBot :: Id -> State ServerState (Maybe Bot)
+getBot :: UserId -> State ServerState (Maybe Bot)
 getBot botId = do
     bots <- getBots
     let bot = Map.lookup botId bots
@@ -136,7 +137,8 @@ putUpdatedBot (Just bot) = do
     put (state { bots = Map.insert botId bot bots })
 
 -- | Send new message in private chat.
-sendMessage :: Id -> Id -> Time -> Text -> State ServerState CompleteMessage
+sendMessage
+    :: UserId -> UserId -> Time -> Text -> State ServerState CompleteMessage
 sendMessage from to date text = do
     fromUser <- getUser from
     toUser <- getUser to
