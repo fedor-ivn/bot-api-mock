@@ -3,16 +3,14 @@
 
 module ServerState
     ( ServerState
-    , getUser
-    , getBots
-    , sendMessage
     , initialize
+    , getUser
     , getBot
-    , Bots
+    , getPrivateChat
+    , sendMessage
     ) where
 
 import Control.Monad.State (MonadState(get, put), State)
-import Data.List (find)
 import qualified Data.List.NonEmpty as List.NonEmpty
 import qualified Data.Map as Map
 import Data.Maybe (fromJust, fromMaybe)
@@ -28,11 +26,10 @@ import ServerState.CompleteMessage (CompleteMessage(CompleteMessage))
 import qualified ServerState.CompleteMessage as CompleteMessage
 import ServerState.InitialBot (InitialBot)
 import qualified ServerState.InitialBot as InitialBot
-import ServerState.Internal (Bots, PrivateChats, ServerState(..))
+import ServerState.Internal
+    (ServerState(..), getBot, getPrivateChat, getUser, putPrivateChat)
 import ServerState.Message.Content (makeMessageContent)
-import ServerState.PrivateChat (PrivateChat)
 import qualified ServerState.PrivateChat as PrivateChat
-import ServerState.PrivateChat.Id (PrivateChatId)
 import qualified ServerState.PrivateChat.Id as PrivateChatId
 import ServerState.Time (Time)
 import ServerState.Update.Id (UpdateId(UpdateId))
@@ -74,48 +71,6 @@ initialize users initialBots = ServerState
             , Bot.updates = Seq.empty
             , Bot.updateId = UpdateId 0
             }
-
--- | Return a list of users from the State.
-getUsers :: State ServerState [User]
-getUsers = do
-    ServerState { users } <- get
-    return users
-
--- | Return a user by Id from the State.
-getUser :: UserId -> State ServerState (Maybe User)
-getUser userId = do
-    users <- getUsers
-    let user = Data.List.find (\x -> User.userId x == userId) users
-    return user
-
--- | Return a list of private chats from the State.
-getPrivateChats :: State ServerState PrivateChats
-getPrivateChats = do
-    ServerState { privateChats } <- get
-    return privateChats
-
--- | Return private chat by Id from the State.
-getPrivateChat :: PrivateChatId -> State ServerState (Maybe PrivateChat)
-getPrivateChat chatId = Map.lookup chatId <$> getPrivateChats
-
--- | Add new private chat to the State.
-putPrivateChat :: PrivateChatId -> PrivateChat -> State ServerState ()
-putPrivateChat chatId chat = do
-    state@ServerState { privateChats } <- get
-    put (state { privateChats = Map.insert chatId chat privateChats })
-
--- | Return a map of bots from the state.
-getBots :: State ServerState Bots
-getBots = do
-    ServerState { bots } <- get
-    return bots
-
--- | Get information about a bot given its ID.
-getBot :: UserId -> State ServerState (Maybe Bot)
-getBot botId = do
-    bots <- getBots
-    let bot = Map.lookup botId bots
-    return bot
 
 putUpdatedBot :: Maybe Bot -> State ServerState ()
 putUpdatedBot Nothing = return ()
